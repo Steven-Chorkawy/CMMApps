@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "new-member-form-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/newMemberForm/NewMemberFormWebPart.js",
+          "manifest": "./src/webparts/newMemberForm/NewMemberFormWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "NewMemberFormWebPartStrings": "lib/webparts/newMemberForm/loc/{locale}.js"
+  }
+}
