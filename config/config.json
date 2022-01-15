@@ -9,10 +9,19 @@
           "manifest": "./src/webparts/newMemberForm/NewMemberFormWebPart.manifest.json"
         }
       ]
+    },
+    "add-committee-member-form-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/addCommitteeMemberForm/AddCommitteeMemberFormWebPart.js",
+          "manifest": "./src/webparts/addCommitteeMemberForm/AddCommitteeMemberFormWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
   "localizedResources": {
-    "NewMemberFormWebPartStrings": "lib/webparts/newMemberForm/loc/{locale}.js"
+    "NewMemberFormWebPartStrings": "lib/webparts/newMemberForm/loc/{locale}.js",
+    "AddCommitteeMemberFormWebPartStrings": "lib/webparts/addCommitteeMemberForm/loc/{locale}.js"
   }
 }
