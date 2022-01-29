@@ -17,11 +17,20 @@
           "manifest": "./src/webparts/addCommitteeMemberForm/AddCommitteeMemberFormWebPart.manifest.json"
         }
       ]
+    },
+    "committee-member-look-up-field-customizer": {
+      "components": [
+        {
+          "entrypoint": "./lib/extensions/committeeMemberLookUp/CommitteeMemberLookUpFieldCustomizer.js",
+          "manifest": "./src/extensions/committeeMemberLookUp/CommitteeMemberLookUpFieldCustomizer.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
   "localizedResources": {
     "NewMemberFormWebPartStrings": "lib/webparts/newMemberForm/loc/{locale}.js",
-    "AddCommitteeMemberFormWebPartStrings": "lib/webparts/addCommitteeMemberForm/loc/{locale}.js"
+    "AddCommitteeMemberFormWebPartStrings": "lib/webparts/addCommitteeMemberForm/loc/{locale}.js",
+    "CommitteeMemberLookUpFieldCustomizerStrings": "lib/extensions/committeeMemberLookUp/loc/{locale}.js"
   }
 }

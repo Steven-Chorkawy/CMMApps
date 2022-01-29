@@ -2,5 +2,29 @@
   "$schema": "https://developer.microsoft.com/json-schemas/core-build/serve.schema.json",
   "port": 4321,
   "https": true,
-  "initialPage": "https://enter-your-SharePoint-site/_layouts/workbench.aspx"
+  "initialPage": "https://enter-your-SharePoint-site/_layouts/workbench.aspx",
+  "serveConfigurations": {
+    "default": {
+      "pageUrl": "https://contoso.sharepoint.com/sites/mySite/SitePages/myPage.aspx",
+      "fieldCustomizers": {
+        "InternalFieldName": {
+          "id": "5815365a-7ce1-47a2-8cda-e43d0f45c8df",
+          "properties": {
+            "sampleText": "Value"
+          }
+        }
+      }
+    },
+    "committeeMemberLookUp": {
+      "pageUrl": "https://contoso.sharepoint.com/sites/mySite/SitePages/myPage.aspx",
+      "fieldCustomizers": {
+        "InternalFieldName": {
+          "id": "5815365a-7ce1-47a2-8cda-e43d0f45c8df",
+          "properties": {
+            "sampleText": "Value"
+          }
+        }
+      }
+    }
+  }
 }
