@@ -2,8 +2,6 @@ import { Log } from '@microsoft/sp-core-library';
 import { override } from '@microsoft/decorators';
 import * as React from 'react';
 
-import styles from './CommitteeMemberLookUp.module.scss';
-
 export interface ICommitteeMemberLookUpProps {
   text: string;
 }
@@ -24,8 +22,8 @@ export default class CommitteeMemberLookUp extends React.Component<ICommitteeMem
   @override
   public render(): React.ReactElement<{}> {
     return (
-      <div className={styles.CommitteeMemberLookUp}>
-        { this.props.text }
+      <div>
+        {this.props.text}
       </div>
     );
   }
