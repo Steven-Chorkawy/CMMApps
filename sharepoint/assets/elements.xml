@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Elements xmlns="http://schemas.microsoft.com/sharepoint/">
-    </Field>
     <Field ID="{a9ecccbd-39f4-4734-8002-6ed1a606d111}"
             Name="MemberDisplayName" 
             DisplayName="Member Display Name" 
