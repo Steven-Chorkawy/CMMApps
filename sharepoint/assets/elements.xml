@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Elements xmlns="http://schemas.microsoft.com/sharepoint/">
-    <Field ID="{2c9d9197-ab9b-46d6-a0a9-48099668e51e}"
-            Name="SPFxPercentage"
-            DisplayName="Percentage"
-            Type="Number"
-            Min="0"
-            Required="FALSE"
-            Group="SPFx Columns"
-            ClientSideComponentId="5815365a-7ce1-47a2-8cda-e43d0f45c8df">
     </Field>
     <Field ID="{a9ecccbd-39f4-4734-8002-6ed1a606d111}"
             Name="MemberDisplayName" 
             DisplayName="Member Display Name" 
             Type="Lookup"  
-            List="Lists/Members">
+            List="Lists/Members"
+            Group="SPFx Columns"
+            ClientSideComponentId="5815365a-7ce1-47a2-8cda-e43d0f45c8df">
     </Field>
 </Elements>

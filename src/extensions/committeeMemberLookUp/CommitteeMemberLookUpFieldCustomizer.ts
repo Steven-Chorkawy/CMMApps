@@ -38,8 +38,11 @@ export default class CommitteeMemberLookUpFieldCustomizer
 
   @override
   public onRenderCell(event: IFieldCustomizerCellEventParameters): void {
+    
+    console.log('event!');
+    console.log(event);
     // Use this method to perform your custom cell rendering.
-    const text: string = `${this.properties.sampleText}: ${event.fieldValue}`;
+    const text: string = `${this.properties.sampleText}: ${event.fieldValue && event.fieldValue.length > 0 && event.fieldValue[0].lookupValue}`;
 
     const committeeMemberLookUp: React.ReactElement<{}> =
       React.createElement(CommitteeMemberLookUp, { text } as ICommitteeMemberLookUpProps);
