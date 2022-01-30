@@ -9,4 +9,10 @@
             Group="SPFx Columns"
             ClientSideComponentId="5815365a-7ce1-47a2-8cda-e43d0f45c8df">
     </Field>
+    <Field ID="{a9ecccbd-39f4-4734-8002-6ed1a606d111}"
+            Name="MemberDisplayName" 
+            DisplayName="Member Display Name" 
+            Type="Lookup"  
+            List="Lists/Members">
+    </Field>
 </Elements>
