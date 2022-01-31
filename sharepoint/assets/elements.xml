@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Elements xmlns="http://schemas.microsoft.com/sharepoint/">
-    <Field ID="{a9ecccbd-39f4-4734-8002-6ed1a606d111}"
-            Name="MemberDisplayName" 
+    <Field ID="{8f2406b5-eb12-4b74-b9fd-3d7ed76af80c}"
+            Name="SPFX_CommitteeMemberDisplayName" 
             DisplayName="Member Display Name" 
             Type="Lookup"  
             List="Lists/Members"
