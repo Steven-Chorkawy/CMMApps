@@ -17,6 +17,8 @@
     "@microsoft/sp-office-ui-fabric-core": "1.13.1",
     "@microsoft/sp-property-pane": "1.13.1",
     "@microsoft/sp-webpart-base": "1.13.1",
+    "@pnp/graph": "^2.11.0",
+    "@pnp/sp": "^2.11.0",
     "@progress/kendo-licensing": "^1.2.1",
     "@progress/kendo-react-dateinputs": "^5.0.1",
     "@progress/kendo-react-form": "^5.0.1",

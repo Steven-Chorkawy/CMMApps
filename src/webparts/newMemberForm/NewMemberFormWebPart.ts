@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
+import { sp } from "@pnp/sp";
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
@@ -26,6 +27,20 @@ export default class NewMemberFormWebPart extends BaseClientSideWebPart<INewMemb
     );
 
     ReactDom.render(element, this.domElement);
+  }
+
+  protected async onInit(): Promise<void> {
+    await super.onInit().then(() => {
+      sp.setup({
+        spfxContext: this.context,
+        sp: {
+          headers: {
+            "Accept": "application/json; odata=nometadata"
+          },
+          baseUrl: this.context.pageContext.web.absoluteUrl
+        }
+      });
+    });
   }
 
   protected onDispose(): void {
