@@ -5,15 +5,17 @@ export default interface IMemberListItem {
     LastName: string;       // ! Required.
     DisplayName?: string;
     Salutation?: string;
-    WorkAddress?: string;
-    Birthday: string;       // This is a Date and Time in SharePoint. 
-    CellPhone1?: string;
-    WorkPhone?: string;
-    WorkCity?: string;
-    WorkCountry?: string;   // Default to Canada in SharePoint.
+
     EMail?: string;
     Email2?: string;
+    CellPhone1?: string;
+    WorkPhone?: string;
     HomePhone?: string;
+
+    WorkAddress?: string;
+    Birthday: string;       // This is a Date and Time in SharePoint. 
+    WorkCity?: string;
+    WorkCountry?: string;   // Default to Canada in SharePoint.
     PostalCode?: string;
     Province?: string;      // This is a Choice column in SharePoint.
 }
