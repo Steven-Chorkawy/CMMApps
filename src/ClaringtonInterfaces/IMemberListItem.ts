@@ -1,4 +1,4 @@
-export default interface IMember {
+export default interface IMemberListItem {
     Title: string;
     FirstName: string;      // ! Required.
     MiddleName?: string;
