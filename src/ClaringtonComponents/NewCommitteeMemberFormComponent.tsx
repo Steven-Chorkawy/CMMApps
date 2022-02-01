@@ -9,6 +9,7 @@ export interface INewCommitteeMemberFormComponentProps extends FieldArrayRenderP
     allowMultiple: boolean;
     committeeName?: string;
     dataItemKey?: string;
+    activeCommittees?: any;
 }
 
 export class NewCommitteeMemberFormComponent extends React.Component<INewCommitteeMemberFormComponentProps, any> {
@@ -43,7 +44,7 @@ export class NewCommitteeMemberFormComponent extends React.Component<INewCommitt
             console.log('NewCommitteeMemberFormItem');
             console.log(props);
             return (<div key={`${this.props.dataItemKey}${props.index}`}>
-                <Field name={`Committees[${props.index}].CommitteeName`} label={`Text ${props.index}`} component={ComboBox} options={[{ key: '1', text: 'CommitteeA' }, { key: '1', text: 'CommitteeB' }]} />
+                <Field name={`Committees[${props.index}].CommitteeName`} label={`Text ${props.index}`} component={ComboBox} options={this.props.activeCommittees.map(value => { return { key: value.Title, text: value.Title }; })} />
             </div>);
         };
 
