@@ -79,7 +79,7 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
             <Field name={'Member.Birthday'} label={'Date of Birth'} component={DatePicker} />
             <hr />
             <Field name={'Member.EMail'} label={'Email'} validator={emailValidator} component={EmailInput} />
-            <Field name={'Member.EMail2'} label={'Email 2'} validator={emailValidator} component={EmailInput} />
+            <Field name={'Member.Email2'} label={'Email 2'} validator={emailValidator} component={EmailInput} />
 
             <Field name={'Member.CellPhone1'} label={'Cell Phone'} component={PhoneInput} onChange={e => formRenderProps.onChange(e.name, e.value)} />
             <Field name={'Member.WorkPhone'} label={'Work Phone'} component={PhoneInput} onChange={e => formRenderProps.onChange(e.name, e.value)} />
