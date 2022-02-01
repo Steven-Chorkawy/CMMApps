@@ -6,13 +6,20 @@ import { Error } from '@progress/kendo-react-labels';
 import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker } from '@fluentui/react';
 import { ActionButton } from 'office-ui-fabric-react';
 import { PropertyPaneSlider } from '@microsoft/sp-property-pane';
-import { CreateNewMember } from '../../../ClaringtonHelperMethods/MyHelperMethods';
+import { CreateNewMember, GetListOfActiveCommittees } from '../../../ClaringtonHelperMethods/MyHelperMethods';
 import { NewCommitteeMemberFormComponent } from '../../../ClaringtonComponents/NewCommitteeMemberFormComponent';
 
 
 export default class NewMemberForm extends React.Component<INewMemberFormProps, any> {
   constructor(props) {
     super(props);
+    this.state = {
+      activeCommittees: [],
+    };
+
+    GetListOfActiveCommittees().then(value => {
+      this.setState({ activeCommittees: value });
+    });
   }
 
   private _onSubmit = values => {
@@ -104,12 +111,16 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
 
             <hr />
             <h2>Add "{formRenderProps.valueGetter('Member.FirstName')} {formRenderProps.valueGetter('Member.LastName')}" to Committee</h2>
-            <FieldArray
-              name={'Committees'}
-              allowMultiple={true}
-              component={NewCommitteeMemberFormComponent}
-              dataItemKey={'CommitteeID'}
-            />
+            {
+              this.state.activeCommittees.length > 0 &&
+              <FieldArray
+                name={'Committees'}
+                allowMultiple={true}
+                component={NewCommitteeMemberFormComponent}
+                dataItemKey={'CommitteeID'}
+                activeCommittees={this.state.activeCommittees}
+              />
+            }
             <hr />
             <div style={{ marginTop: "10px" }}>
               <PrimaryButton text='Submit' type="submit" style={{ margin: '5px' }} />
