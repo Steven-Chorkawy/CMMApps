@@ -24,6 +24,7 @@
     "@progress/kendo-react-form": "^5.0.1",
     "@progress/kendo-react-intl": "^5.0.1",
     "@progress/kendo-react-labels": "^5.0.1",
+    "@progress/kendo-react-listview": "^5.0.1",
     "office-ui-fabric-react": "7.174.1",
     "react": "16.13.1",
     "react-dom": "16.13.1"

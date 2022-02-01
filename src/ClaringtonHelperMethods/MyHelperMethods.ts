@@ -17,12 +17,11 @@ import { MyLists } from "./MyLists";
 export const CreateNewMember = async (member: IMemberListItem): Promise<any> => {
     console.log('CreateNewMember');
     member.Title = `${member.FirstName}, ${member.LastName}`;
-
     // add an item to the list
     let iar = await sp.web.lists.getByTitle(MyLists.Members).items.add(member);
-
-    console.log('iar');
-    console.log(iar);
-
     return iar;
 };
+
+export const GetListOfActiveCommittees = async (): Promise<any> => {
+
+}

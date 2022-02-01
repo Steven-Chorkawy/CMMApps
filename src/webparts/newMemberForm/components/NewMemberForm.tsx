@@ -1,23 +1,18 @@
 import * as React from 'react';
 
 import { INewMemberFormProps } from './INewMemberFormProps';
-import { Form, FormElement, Field } from '@progress/kendo-react-form';
+import { Form, FormElement, Field, FieldArray } from '@progress/kendo-react-form';
 import { Error } from '@progress/kendo-react-labels';
-import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox } from '@fluentui/react';
+import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker } from '@fluentui/react';
 import { ActionButton } from 'office-ui-fabric-react';
 import { PropertyPaneSlider } from '@microsoft/sp-property-pane';
 import { CreateNewMember } from '../../../ClaringtonHelperMethods/MyHelperMethods';
+import { NewCommitteeMemberFormComponent } from '../../../ClaringtonComponents/NewCommitteeMemberFormComponent';
 
-export interface INewMemberFormState {
-  showEmail2: boolean;
-}
 
-export default class NewMemberForm extends React.Component<INewMemberFormProps, INewMemberFormState> {
+export default class NewMemberForm extends React.Component<INewMemberFormProps, any> {
   constructor(props) {
     super(props);
-    this.state = {
-      showEmail2: false,
-    };
   }
 
   private _onSubmit = values => {
@@ -68,16 +63,16 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
         onSubmit={this._onSubmit}
         render={(formRenderProps) => (
           <FormElement>
-            <h3>Add New Member</h3>
+            <h2>Add New Member</h2>
             <hr />
             <Field name={'Member.Salutation'} label={'Salutation'} component={TextField} />
             <Field name={'Member.FirstName'} label={'First Name'} required={true} component={TextField} />
             <Field name={'Member.MiddleName'} label={'Middle Name'} component={TextField} />
             <Field name={'Member.LastName'} label={'Last Name'} required={true} component={TextField} />
+            <Field name={'Member.Birthday'} label={'Date of Birth'} component={DatePicker} />
             <hr />
             <Field name={'Member.EMail'} label={'Email'} validator={emailValidator} component={EmailInput} />
-            {!this.state.showEmail2 && <ActionButton iconProps={{ iconName: "Add" }} onClick={() => this.setState({ showEmail2: true })}>Add Second Email</ActionButton>}
-            {this.state.showEmail2 && <Field name={'Member.EMail2'} label={'Email 2'} validator={emailValidator} component={EmailInput} />}
+            <Field name={'Member.EMail2'} label={'Email 2'} validator={emailValidator} component={EmailInput} />
 
             <Field name={'Member.CellPhone1'} label={'Cell Phone'} component={PhoneInput} onChange={e => formRenderProps.onChange(e.name, e.value)} />
             <Field name={'Member.WorkPhone'} label={'Work Phone'} component={PhoneInput} onChange={e => formRenderProps.onChange(e.name, e.value)} />
@@ -107,9 +102,18 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
                 { key: 'Yukon', text: 'Yukon' }
               ]} />
 
+            <hr />
+            <h2>Add "{formRenderProps.valueGetter('Member.FirstName')} {formRenderProps.valueGetter('Member.LastName')}" to Committee</h2>
+            <FieldArray
+              name={'Committees'}
+              allowMultiple={true}
+              component={NewCommitteeMemberFormComponent}
+              dataItemKey={'CommitteeID'}
+            />
+            <hr />
             <div style={{ marginTop: "10px" }}>
-              <PrimaryButton text='Submit' type="submit" />
-              <DefaultButton text='Clear' onClick={e => { formRenderProps.onFormReset(); }} />
+              <PrimaryButton text='Submit' type="submit" style={{ margin: '5px' }} />
+              <DefaultButton text='Clear' style={{ margin: '5px' }} onClick={e => { formRenderProps.onFormReset(); }} />
             </div>
           </FormElement>
         )}
