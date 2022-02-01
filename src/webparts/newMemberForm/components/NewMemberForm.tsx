@@ -37,16 +37,30 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
       return <TextField {...others} errorMessage={visited && validationMessage && validationMessage} />;
     };
 
-    // ! This is accepting 1 non numeric character, but it does not display it. 
-    // ! This is also accepting (999) 999-99999.  Note that there is one extra character at the end for some reason.
+    /**
+     * Fluent UI's MaskedTextField is appending one extra character so this component will manually handle the OnChange event. 
+     * Any field that uses a MaskedTextField will need to include "onChange={e => formRenderProps.onChange(e.name, e.value)}".
+     * @param fieldRenderProps Kendo UI Field Render Props from form.
+     * @returns MaskedTextField element.
+     */
+    function MyMaskedInput(fieldRenderProps) {
+      return <MaskedTextField
+        {...fieldRenderProps}
+        onChange={(event, newValue) => {
+          fieldRenderProps.onChange({
+            name: fieldRenderProps.name,
+            value: { value: newValue }
+          });
+        }}
+      />;
+    }
+
     const PhoneInput = (fieldRenderProps) => {
-      const { validationMessage, visited, ...others } = fieldRenderProps;
-      return <MaskedTextField {...others} mask="(999) 999-9999" />;
+      return <MyMaskedInput {...fieldRenderProps} mask="(999) 999-9999" />;
     };
 
     const PostalCodeInput = (fieldRenderProps) => {
-      const { validationMessage, visited, ...others } = fieldRenderProps;
-      return <MaskedTextField {...others} mask="a9a 9a9" />;
+      return <MyMaskedInput {...fieldRenderProps} mask="a9a 9a9" />;
     };
 
     return (<div>
@@ -65,14 +79,14 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
             {!this.state.showEmail2 && <ActionButton iconProps={{ iconName: "Add" }} onClick={() => this.setState({ showEmail2: true })}>Add Second Email</ActionButton>}
             {this.state.showEmail2 && <Field name={'Member.EMail2'} label={'Email 2'} validator={emailValidator} component={EmailInput} />}
 
-            <Field name={'Member.CellPhone1'} label={'Cell Phone'} component={PhoneInput} />
-            <Field name={'Member.WorkPhone'} label={'Work Phone'} component={PhoneInput} />
-            <Field name={'Member.HomePhone'} label={'Home Phone'} component={PhoneInput} />
+            <Field name={'Member.CellPhone1'} label={'Cell Phone'} component={PhoneInput} onChange={e => formRenderProps.onChange(e.name, e.value)} />
+            <Field name={'Member.WorkPhone'} label={'Work Phone'} component={PhoneInput} onChange={e => formRenderProps.onChange(e.name, e.value)} />
+            <Field name={'Member.HomePhone'} label={'Home Phone'} component={PhoneInput} onChange={e => formRenderProps.onChange(e.name, e.value)} />
 
             <hr />
             <Field name={'Member.WorkAddress'} label={'Street Address'} component={TextField} />
             <Field name={'Member.WorkCity'} label={'City'} component={TextField} />
-            <Field name={'Member.PostalCode'} label={'Postal Code'} component={PostalCodeInput} />
+            <Field name={'Member.PostalCode'} label={'Postal Code'} component={PostalCodeInput} onChange={e => formRenderProps.onChange(e.name, e.value)} />
             {/** !!! TODO: Get these values from SharePoint, not hard coded.  */}
             <Field name={'Member.Province'}
               label={'Province'}
