@@ -7,15 +7,17 @@ import { ActionButton } from 'office-ui-fabric-react';
 
 import { INewMemberFormProps } from './INewMemberFormProps';
 import { CreateNewMember, GetListOfActiveCommittees } from '../../../ClaringtonHelperMethods/MyHelperMethods';
-import { NewCommitteeMemberFormComponent } from '../../../ClaringtonComponents/NewCommitteeMemberFormComponent';
+import { NewCommitteeMemberFormComponent, _N } from '../../../ClaringtonComponents/NewCommitteeMemberFormComponent';
 
 import { Error } from '@progress/kendo-react-labels';
 import { Grid, GridColumn, GridToolbar } from '@progress/kendo-react-grid';
 import { Form, FormElement, Field, FieldArray } from '@progress/kendo-react-form';
 import { Input, NumericTextBox } from '@progress/kendo-react-inputs';
 import { clone } from '@progress/kendo-react-common';
+import { ListView, ListViewHeader } from '@progress/kendo-react-listview';
 
 
+//#region Array Grid Test
 const FORM_DATA_INDEX = "formDataIndex";
 
 const requiredValidator = (value) => (value ? "" : "The field is required");
@@ -220,9 +222,7 @@ const FormGrid = (fieldArrayRenderProps) => {
             title="Add new"
             className="k-button k-button-md k-rounded-md k-button-solid k-button-solid-primary"
             onClick={onAdd}
-          >
-            Add new
-          </button>
+          >Add new</button>
         </GridToolbar>
         <GridColumn
           field="ProductName"
@@ -235,6 +235,80 @@ const FormGrid = (fieldArrayRenderProps) => {
     </FormGridEditContext.Provider>
   );
 };
+//#endregion
+
+//#region Array List Test
+export const WTF_IS_THIS_Context = React.createContext({});
+
+export const _NN = (fieldArrayRenderProps) => {
+  const FORM_DATA_INDEX = "formDataIndex";
+  const { validationMessage, visited, name, dataItemKey } = fieldArrayRenderProps;
+  const [editIndex, setEditIndex] = React.useState(0);
+  const editItemCloneRef = React.useRef(); // Add a new item to the Form FieldArray that will be shown in the Grid
+
+  const onAdd = React.useCallback(
+    (e) => {
+      e.preventDefault();
+      fieldArrayRenderProps.onUnshift({
+        value: {
+          id: "",
+          name: "",
+        },
+      });
+      setEditIndex(0);
+    },
+    [fieldArrayRenderProps]
+  ); // Remove a new item to the Form FieldArray that will be removed from the Grid
+  const dataWithIndexes = fieldArrayRenderProps.value?.map((item, index) => {
+    return { ...item, [FORM_DATA_INDEX]: index };
+  });
+
+  const MyFooter = () => {
+    return (<ListViewHeader
+      style={{
+        color: "rgb(160, 160, 160)",
+        fontSize: 14,
+      }}
+      className="pl-3 pb-2 pt-2"
+    >
+      <ActionButton iconProps={{ iconName: 'Add' }} onClick={onAdd}>Add Committee</ActionButton>
+    </ListViewHeader>);
+  };
+
+  const NewCommitteeMemberFormItem = (props) => {
+    console.log('NewCommitteeMemberFormItem');
+    console.log(props);
+    return (
+      <div>
+        <h5>Hello World!</h5>
+        {/* <Field
+          name={`Committees[${0}].CommitteeName`}
+          label={`Text ${0}`}
+          component={ComboBox}
+          options={[]}
+          // options={fieldArrayRenderProps.activeCommittees.map(value => { return { key: value.Title, text: value.Title }; })}
+        /> */}
+      </div>
+    );
+  };
+
+  return (
+    <WTF_IS_THIS_Context.Provider value={{
+      onAdd,
+      editIndex,
+      parentField: name
+    }}>
+      <ListView
+        item={NewCommitteeMemberFormItem}
+        footer={MyFooter}
+        data={dataWithIndexes}
+        style={{ width: "100%" }}
+      />
+    </WTF_IS_THIS_Context.Provider>
+  );
+}
+//#endregion
+
 
 export default class NewMemberForm extends React.Component<INewMemberFormProps, any> {
   constructor(props) {
@@ -338,21 +412,21 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
             <hr />
             <h2>Add "{formRenderProps.valueGetter('Member.FirstName')} {formRenderProps.valueGetter('Member.LastName')}" to Committee</h2>
             <FieldArray
-              name="Committee.products"
+              name="Products"
               dataItemKey={DATA_ITEM_KEY}
               component={FormGrid}
               validator={arrayLengthValidator}
             />
-            {/* {
+            {
               this.state.activeCommittees.length > 0 &&
               <FieldArray
                 name={'Committees'}
                 allowMultiple={true}
-                component={NewCommitteeMemberFormComponent}
+                component={_N}
                 dataItemKey={'CommitteeID'}
                 activeCommittees={this.state.activeCommittees}
               />
-            } */}
+            }
             <hr />
             <div style={{ marginTop: "10px" }}>
               <PrimaryButton text='Submit' type="submit" style={{ margin: '5px' }} />

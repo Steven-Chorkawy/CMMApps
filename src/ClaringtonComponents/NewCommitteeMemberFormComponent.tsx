@@ -28,6 +28,10 @@ export class NewCommitteeMemberFormComponent extends React.Component<INewCommitt
     }
 
     public render(): React.ReactElement<any> {
+
+        const dataWithIndexes = this.props.value?.map((item, index) => {
+            return { ...item, ["formDataIndex"]: index };
+        });
         const MyFooter = () => {
             return (<ListViewHeader
                 style={{
@@ -63,10 +67,87 @@ export class NewCommitteeMemberFormComponent extends React.Component<INewCommitt
                 <ListView
                     item={NewCommitteeMemberFormItem}
                     footer={MyFooter}
-                    data={this.props.value}
+                    data={dataWithIndexes}
                     style={{ width: "100%" }}
                 />
             </div>
         );
     }
+}
+
+
+export const WTF_IS_THIS_Context = React.createContext({});
+
+export const _N = (fieldArrayRenderProps) => {
+    const FORM_DATA_INDEX = "formDataIndex";
+    const { validationMessage, visited, name, dataItemKey } = fieldArrayRenderProps;
+    const [editIndex, setEditIndex] = React.useState(0);
+    const editItemCloneRef = React.useRef(); // Add a new item to the Form FieldArray that will be shown in the Grid
+
+
+
+    const onAdd = React.useCallback(
+        (e) => {
+            e.preventDefault();
+            fieldArrayRenderProps.onUnshift({
+                value: {
+                    id: "",
+                    name: "",
+                },
+            });
+            setEditIndex(0);
+        },
+        [fieldArrayRenderProps]
+    ); // Remove a new item to the Form FieldArray that will be removed from the Grid
+    const dataWithIndexes = fieldArrayRenderProps.value?.map((item, index) => {
+        return { ...item, [FORM_DATA_INDEX]: index };
+    });
+
+    const MyFooter = () => {
+        return (<ListViewHeader
+            style={{
+                color: "rgb(160, 160, 160)",
+                fontSize: 14,
+            }}
+            className="pl-3 pb-2 pt-2"
+        >
+            <ActionButton iconProps={{ iconName: 'Add' }} onClick={onAdd}>Add Committee</ActionButton>
+        </ListViewHeader>);
+    };
+
+    const NewCommitteeMemberFormItem = (props) => {
+        console.log('NewCommitteeMemberFormItem');
+        console.log(props);
+        return (
+            <div>
+                <h6>tester</h6>
+                {/* <Field
+                    name={`Committees[${props.index}].CommitteeName`}
+                    label={`Text ${props.index}`}
+                    component={ComboBox}
+                    options={fieldArrayRenderProps.activeCommittees.map(value => { return { key: value.Title, text: value.Title }; })}
+                />
+                <Field
+                    name={`Committees[${props.index}].TestText`}
+                    label={'Test Text'}
+                    component={TextField}
+                /> */}
+            </div>
+        );
+    };
+
+    return (
+        <WTF_IS_THIS_Context.Provider value={{
+            onAdd,
+            editIndex,
+            parentField: name
+        }}>
+            <ListView
+                item={NewCommitteeMemberFormItem}
+                footer={MyFooter}
+                data={dataWithIndexes}
+                style={{ width: "100%" }}
+            />
+        </WTF_IS_THIS_Context.Provider>
+    );
 }
