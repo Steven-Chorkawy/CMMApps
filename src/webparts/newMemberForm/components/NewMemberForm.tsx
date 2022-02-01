@@ -31,7 +31,7 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
   public render(): React.ReactElement<INewMemberFormProps> {
 
     const emailRegex = new RegExp(/\S+@\S+\.\S+/);
-    const emailValidator = (value) => emailRegex.test(value) ? "" : "Please enter a valid email.";
+    const emailValidator = (value) => (value === undefined || emailRegex.test(value)) ? "" : "Please enter a valid email.";
     const EmailInput = (fieldRenderProps) => {
       const { validationMessage, visited, ...others } = fieldRenderProps;
       return <TextField {...others} errorMessage={visited && validationMessage && validationMessage} />;
