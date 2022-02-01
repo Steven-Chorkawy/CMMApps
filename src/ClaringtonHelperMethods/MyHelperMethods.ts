@@ -23,5 +23,6 @@ export const CreateNewMember = async (member: IMemberListItem): Promise<any> => 
 };
 
 export const GetListOfActiveCommittees = async (): Promise<any> => {
-
-}
+    // TODO: Remove hard coded content type id.
+    return await sp.web.lists.getByTitle(MyLists.CommitteeFiles).items.filter("OData__Status eq 'Active' and ContentTypeId eq '0x0120D52000BD403A8C219D9A40B835B291EFC822540092D9BC58A61C004084D3AAF8347D14E3'").getAll();
+};
