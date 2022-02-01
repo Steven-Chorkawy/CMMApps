@@ -1,14 +1,240 @@
 import * as React from 'react';
+import * as ReactDOM from "react-dom";
 
-import { INewMemberFormProps } from './INewMemberFormProps';
-import { Form, FormElement, Field, FieldArray } from '@progress/kendo-react-form';
-import { Error } from '@progress/kendo-react-labels';
+import { PropertyPaneSlider } from '@microsoft/sp-property-pane';
 import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker } from '@fluentui/react';
 import { ActionButton } from 'office-ui-fabric-react';
-import { PropertyPaneSlider } from '@microsoft/sp-property-pane';
+
+import { INewMemberFormProps } from './INewMemberFormProps';
 import { CreateNewMember, GetListOfActiveCommittees } from '../../../ClaringtonHelperMethods/MyHelperMethods';
 import { NewCommitteeMemberFormComponent } from '../../../ClaringtonComponents/NewCommitteeMemberFormComponent';
 
+import { Error } from '@progress/kendo-react-labels';
+import { Grid, GridColumn, GridToolbar } from '@progress/kendo-react-grid';
+import { Form, FormElement, Field, FieldArray } from '@progress/kendo-react-form';
+import { Input, NumericTextBox } from '@progress/kendo-react-inputs';
+import { clone } from '@progress/kendo-react-common';
+
+
+const FORM_DATA_INDEX = "formDataIndex";
+
+const requiredValidator = (value) => (value ? "" : "The field is required");
+
+const DisplayValue = (fieldRenderProps) => {
+  return <>{fieldRenderProps.value}</>;
+};
+
+const TextInputWithValidation = (fieldRenderProps) => {
+  const { validationMessage, visited, ...others } = fieldRenderProps;
+  return (
+    <div>
+      <Input {...others} />
+      {visited && validationMessage && <Error>{validationMessage}</Error>}
+    </div>
+  );
+};
+
+const minValidator = (value) => (value >= 0 ? "" : "Minimum units 0");
+
+const NumericTextBoxWithValidation = (fieldRenderProps) => {
+  const { validationMessage, visited, ...others } = fieldRenderProps;
+  const anchor = React.useRef(null);
+  return (
+    <div>
+      <NumericTextBox {...others} ref={anchor} />
+      {visited && validationMessage && <Error>{validationMessage}</Error>}
+    </div>
+  );
+};
+
+export const NumberCell = (props) => {
+  const { parentField, editIndex }: any = React.useContext(FormGridEditContext);
+  const isInEdit = props.dataItem[FORM_DATA_INDEX] === editIndex;
+  return (
+    <td>
+      <Field
+        component={isInEdit ? NumericTextBoxWithValidation : DisplayValue}
+        name={`${parentField}[${props.dataItem[FORM_DATA_INDEX]}].${props.field}`}
+        validator={minValidator}
+      />
+    </td>
+  );
+};
+export const NameCell = (props) => {
+  const { parentField, editIndex }: any = React.useContext(FormGridEditContext);
+  const isInEdit = props.dataItem[FORM_DATA_INDEX] === editIndex;
+  return (
+    <td>
+      <Field
+        component={isInEdit ? TextInputWithValidation : DisplayValue}
+        name={`${parentField}[${props.dataItem[FORM_DATA_INDEX]}].${props.field}`}
+        validator={requiredValidator}
+      />
+    </td>
+  );
+};
+
+const arrayLengthValidator = (value) =>
+  value && value.length ? "" : "Please add at least one record."; // Create React.Context to pass props to the Form Field components from the main component
+
+export const FormGridEditContext = React.createContext({});
+const DATA_ITEM_KEY = "ProductID"; // Add a command cell to Edit, Update, Cancel and Delete an item
+
+const CommandCell = (props) => {
+  const { onRemove, onEdit, onSave, onCancel, editIndex }: any = React.useContext(FormGridEditContext);
+  const isInEdit = props.dataItem[FORM_DATA_INDEX] === editIndex;
+  const isNewItem = !props.dataItem[DATA_ITEM_KEY];
+  const onRemoveClick = React.useCallback(
+    (e) => {
+      e.preventDefault();
+      onRemove(props.dataItem);
+    },
+    [props.dataItem, onRemove]
+  );
+  const onEditClick = React.useCallback(
+    (e) => {
+      e.preventDefault();
+      onEdit(props.dataItem, isNewItem);
+    },
+    [props.dataItem, onEdit, isNewItem]
+  );
+  const onSaveClick = React.useCallback(
+    (e) => {
+      e.preventDefault();
+      onSave();
+    },
+    [onSave]
+  );
+  const onCancelClick = React.useCallback(
+    (e) => {
+      e.preventDefault();
+      onCancel();
+    },
+    [onCancel]
+  );
+  return isInEdit ? (
+    <td className="k-command-cell">
+      <button
+        className="k-button k-button-md k-rounded-md k-button-solid k-button-solid-base k-grid-save-command"
+        onClick={onSaveClick}
+      >
+        {isNewItem ? "Add" : "Update"}
+      </button>
+      <button
+        className="k-button k-button-md k-rounded-md k-button-solid k-button-solid-base k-grid-cancel-command"
+        onClick={isNewItem ? onRemoveClick : onCancelClick}
+      >
+        {isNewItem ? "Discard" : "Cancel"}
+      </button>
+    </td>
+  ) : (
+    <td className="k-command-cell">
+      <button
+        className="k-button k-button-md k-rounded-md k-button-solid k-button-solid-primary k-grid-edit-command"
+        onClick={onEditClick}
+      >
+        Edit
+      </button>
+      <button
+        className="k-button k-button-md k-rounded-md k-button-solid k-button-solid-base k-grid-remove-command"
+        onClick={onRemoveClick}
+      >
+        Remove
+      </button>
+    </td>
+  );
+}; // Create the Grid that will be used inside the Form
+
+const FormGrid = (fieldArrayRenderProps) => {
+  const { validationMessage, visited, name, dataItemKey } =
+    fieldArrayRenderProps;
+  const [editIndex, setEditIndex] = React.useState(0);
+  const editItemCloneRef = React.useRef(); // Add a new item to the Form FieldArray that will be shown in the Grid
+
+  const onAdd = React.useCallback(
+    (e) => {
+      e.preventDefault();
+      fieldArrayRenderProps.onUnshift({
+        value: {
+          id: "",
+          name: "",
+        },
+      });
+      setEditIndex(0);
+    },
+    [fieldArrayRenderProps]
+  ); // Remove a new item to the Form FieldArray that will be removed from the Grid
+
+  const onRemove = React.useCallback(
+    (dataItem) => {
+      fieldArrayRenderProps.onRemove({
+        index: dataItem[FORM_DATA_INDEX],
+      });
+      setEditIndex(undefined);
+    },
+    [fieldArrayRenderProps]
+  ); // Update an item from the Grid and update the index of the edited item
+
+  const onEdit = React.useCallback((dataItem, isNewItem) => {
+    if (!isNewItem) {
+      editItemCloneRef.current = clone(dataItem);
+    }
+
+    setEditIndex(dataItem[FORM_DATA_INDEX]);
+  }, []); // Cancel the editing of an item and return its initial value
+
+  // const onCancel = React.useCallback(() => {
+  //   if (editItemCloneRef.current) {
+  //     fieldArrayRenderProps.onReplace({
+  //       index: editItemCloneRef['current'][FORM_DATA_INDEX],
+  //       value: editItemCloneRef.current,
+  //     });
+  //   }
+
+  //   editItemCloneRef.current = undefined;
+  //   setEditIndex(undefined);
+  // }, [fieldArrayRenderProps]); // Save the changes
+
+  const onSave = React.useCallback(() => {
+    console.log(fieldArrayRenderProps);
+    setEditIndex(undefined);
+  }, [fieldArrayRenderProps]);
+  const dataWithIndexes = fieldArrayRenderProps.value?.map((item, index) => {
+    return { ...item, [FORM_DATA_INDEX]: index };
+  });
+  return (
+    <FormGridEditContext.Provider
+      value={{
+        // onCancel,
+        onEdit,
+        onRemove,
+        onSave,
+        editIndex,
+        parentField: name,
+      }}
+    >
+      {visited && validationMessage && <Error>{validationMessage}</Error>}
+      <Grid data={dataWithIndexes} dataItemKey={dataItemKey}>
+        <GridToolbar>
+          <button
+            title="Add new"
+            className="k-button k-button-md k-rounded-md k-button-solid k-button-solid-primary"
+            onClick={onAdd}
+          >
+            Add new
+          </button>
+        </GridToolbar>
+        <GridColumn
+          field="ProductName"
+          title="Name" cell={NameCell} />
+        <GridColumn
+          field="UnitsOnOrder"
+          title="Units" cell={NumberCell} />
+        <GridColumn cell={CommandCell} width="240px" />
+      </Grid>
+    </FormGridEditContext.Provider>
+  );
+};
 
 export default class NewMemberForm extends React.Component<INewMemberFormProps, any> {
   constructor(props) {
@@ -111,7 +337,13 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
 
             <hr />
             <h2>Add "{formRenderProps.valueGetter('Member.FirstName')} {formRenderProps.valueGetter('Member.LastName')}" to Committee</h2>
-            {
+            <FieldArray
+              name="Committee.products"
+              dataItemKey={DATA_ITEM_KEY}
+              component={FormGrid}
+              validator={arrayLengthValidator}
+            />
+            {/* {
               this.state.activeCommittees.length > 0 &&
               <FieldArray
                 name={'Committees'}
@@ -120,7 +352,7 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
                 dataItemKey={'CommitteeID'}
                 activeCommittees={this.state.activeCommittees}
               />
-            }
+            } */}
             <hr />
             <div style={{ marginTop: "10px" }}>
               <PrimaryButton text='Submit' type="submit" style={{ margin: '5px' }} />
