@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 
 import { PropertyPaneSlider } from '@microsoft/sp-property-pane';
 import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker } from '@fluentui/react';
-import { ActionButton } from 'office-ui-fabric-react';
+import { ActionButton, concatStyleSetsWithProps } from 'office-ui-fabric-react';
 
 import { INewMemberFormProps } from './INewMemberFormProps';
 import { CreateNewMember, GetListOfActiveCommittees } from '../../../ClaringtonHelperMethods/MyHelperMethods';
@@ -11,7 +11,7 @@ import { NewCommitteeMemberFormComponent, _N } from '../../../ClaringtonComponen
 
 import { Error } from '@progress/kendo-react-labels';
 import { Grid, GridColumn, GridToolbar } from '@progress/kendo-react-grid';
-import { Form, FormElement, Field, FieldArray } from '@progress/kendo-react-form';
+import { Form, FormElement, Field, FieldArray, FieldArrayProps } from '@progress/kendo-react-form';
 import { Input, NumericTextBox } from '@progress/kendo-react-inputs';
 import { clone } from '@progress/kendo-react-common';
 import { ListView, ListViewHeader } from '@progress/kendo-react-listview';
@@ -309,6 +309,93 @@ export const _NN = (fieldArrayRenderProps) => {
 }
 //#endregion
 
+//#region Array Basic List Text
+export const ListViewContext = React.createContext<{
+  parentField: string;
+}>({} as any);
+
+class TestList extends React.Component<FieldArrayProps> {
+  /**
+   *
+   */
+  constructor(props) {
+    super(props);
+  }
+  editItemCloneRef: any = React.createRef();
+
+  state = {
+    editIndex: 0,
+  };
+
+  // Add a new item to the Form FieldArray that will be shown in the List
+  onAdd = (e) => {
+    e.preventDefault();
+    this.props.onPush({
+      value: {
+        id: "",
+        name: "",
+      },
+    });
+    this.setState({ editIndex: 0 });
+  };
+
+
+  NewCommitteeMemberFormItem = (props) => {
+    const lvContext = React.useContext(ListViewContext);
+    let parentField = 'FAKE';
+    console.log('NewCommitteeMemberFormItem');
+    console.log(props);
+    console.log(lvContext);
+
+    return (
+      <div>
+        <h5>Hello World!</h5>
+        <Field
+          name={`${lvContext.parentField}[${props.dataItem[FORM_DATA_INDEX]}].HarCodeName`}
+          label={`Text`}
+          component={TextField}
+        // options={fieldArrayRenderProps.activeCommittees.map(value => { return { key: value.Title, text: value.Title }; })}
+        />
+      </div>
+    );
+  };
+
+  MyFooter = () => {
+    return (<ListViewHeader
+      style={{
+        color: "rgb(160, 160, 160)",
+        fontSize: 14,
+      }}
+      className="pl-3 pb-2 pt-2"
+    >
+      <ActionButton iconProps={{ iconName: 'Add' }} onClick={this.onAdd}>Add Committee</ActionButton>
+    </ListViewHeader>);
+  };
+
+  public render() {
+    console.log("test List render");
+    console.log(this.props);
+    const dataWithIndexes = this.props.value?.map((item, index) => {
+      return { ...item, [FORM_DATA_INDEX]: index };
+    });
+    const { validationMessage, visited, name, dataItemKey } = this.props;
+
+    return (
+      <ListViewContext.Provider value={{
+        parentField: name,
+      }}>
+        <ListView
+          item={this.NewCommitteeMemberFormItem}
+          footer={this.MyFooter}
+          data={dataWithIndexes}
+          style={{ width: "100%" }}
+        />
+      </ListViewContext.Provider>
+    );
+  }
+}
+
+//#endregion
 
 export default class NewMemberForm extends React.Component<INewMemberFormProps, any> {
   constructor(props) {
@@ -325,7 +412,8 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
   private _onSubmit = values => {
     console.log('_onSubmit');
     console.log(values);
-    CreateNewMember(values.Member);
+    // TODO: Uncomment this when I am done testing.
+    //CreateNewMember(values.Member);
 
     console.log('end of _onSubmit');
   }
@@ -410,22 +498,29 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
               ]} />
 
             <hr />
-            <h2>Add "{formRenderProps.valueGetter('Member.FirstName')} {formRenderProps.valueGetter('Member.LastName')}" to Committee</h2>
+            <h2>Test List View</h2>
             <FieldArray
+              name={'TestList'}
+              component={TestList}
+              activeCommittees={this.state.activeCommittees}
+            />
+            <hr />
+            <h2>Add "{formRenderProps.valueGetter('Member.FirstName')} {formRenderProps.valueGetter('Member.LastName')}" to Committee</h2>
+            {/* <FieldArray
               name="Products"
               dataItemKey={DATA_ITEM_KEY}
               component={FormGrid}
               validator={arrayLengthValidator}
-            />
+            /> */}
             {
-              this.state.activeCommittees.length > 0 &&
-              <FieldArray
-                name={'Committees'}
-                allowMultiple={true}
-                component={_N}
-                dataItemKey={'CommitteeID'}
-                activeCommittees={this.state.activeCommittees}
-              />
+              // this.state.activeCommittees.length > 0 &&
+              // <FieldArray
+              //   name={'Committees'}
+              //   allowMultiple={true}
+              //   component={_N}
+              //   dataItemKey={'CommitteeID'}
+              //   activeCommittees={this.state.activeCommittees}
+              // />
             }
             <hr />
             <div style={{ marginTop: "10px" }}>
