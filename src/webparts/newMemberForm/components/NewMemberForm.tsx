@@ -237,6 +237,7 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
         options={options}
         onChange={(event, option) => {
           event.preventDefault();
+          // ! This calls the fields onChange event which in turn passes the new selected value to the form state.
           onChange({ value: option.text });
         }}
       />;
@@ -286,11 +287,6 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
                 { id: 'Saskatchewan', text: 'Saskatchewan' },
                 { id: 'Yukon', text: 'Yukon' }
               ]}
-              // onChange={e => {
-              //   console.log('field on Change');
-              //   console.log(e);
-              //   //formRenderProps.onChange('Member.Province', e.value)
-              // }}
             />
 
             <hr />
