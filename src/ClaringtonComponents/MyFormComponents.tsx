@@ -38,7 +38,7 @@ export const MyDatePicker = fieldRenderProps => {
       onSelectDate={e => fieldRenderProps.onChange({ value: e })}
     />
   </div>;
-}
+};
 
 /**
      * Fluent UI's MaskedTextField is appending one extra character so this component will manually handle the OnChange event. 
