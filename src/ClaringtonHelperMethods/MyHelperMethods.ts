@@ -14,8 +14,14 @@ import { MyLists } from "./MyLists";
 
 
 export const GetChoiceColumn = async (listTitle: string, columnName: string): Promise<string[]> => {
-    let choiceColumn: any = await sp.web.lists.getByTitle(listTitle).fields.getByTitle(columnName).select('Choices').get();
-    return choiceColumn.Choices;
+    try {
+        let choiceColumn: any = await sp.web.lists.getByTitle(listTitle).fields.getByTitle(columnName).select('Choices').get();
+        return choiceColumn.Choices;
+    } catch (error) {
+        console.log('Something went wrong in GetChoiceColumn!');
+        console.error(error);
+        return [];
+    }
 };
 
 export const CreateNewMember = async (member: IMemberListItem): Promise<any> => {

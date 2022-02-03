@@ -5,6 +5,7 @@ import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, Dat
 import { ActionButton } from 'office-ui-fabric-react';
 import { ListView, ListViewHeader } from '@progress/kendo-react-listview';
 import { MyComboBox } from './MyFormComponents';
+import { GetChoiceColumn } from '../ClaringtonHelperMethods/MyHelperMethods';
 
 
 export const NewCommitteeMemberContext = React.createContext<{
@@ -12,12 +13,14 @@ export const NewCommitteeMemberContext = React.createContext<{
     activeCommittees: any[];
 }>({} as any);
 
-export class NewCommitteeMemberFormComponent extends React.Component<FieldArrayProps> {
+export class NewCommitteeMemberFormComponent extends React.Component<FieldArrayProps, any> {
     constructor(props) {
         super(props);
 
         this.state = {
             editIndex: 0,
+            position: [],
+            status: []
         };
     }
 
@@ -38,12 +41,40 @@ export class NewCommitteeMemberFormComponent extends React.Component<FieldArrayP
 
     private NewCommitteeMemberFormItem = (props) => {
         const lvContext = React.useContext(NewCommitteeMemberContext);
-        return <Field
-            name={`${lvContext.parentField}[${props.dataItem[this.FORM_DATA_INDEX]}].CommitteeName`}
-            label={`Select Committee`}
-            component={MyComboBox}
-            options={lvContext.activeCommittees.map(value => { return { key: value.Title, text: value.Title }; })}
-        />;
+        return (
+            <div>
+                <Field
+                    name={`${lvContext.parentField}[${props.dataItem[this.FORM_DATA_INDEX]}].CommitteeName`}
+                    label={`Select Committee`}
+                    component={MyComboBox}
+                    options={lvContext.activeCommittees.map(value => { return { key: value.Title, text: value.Title }; })}
+                    onChange={(e) => {
+                        GetChoiceColumn(e.value, 'Status').then(f => this.setState({ status: f }));
+                        GetChoiceColumn(e.value, 'Position').then(f => this.setState({ positions: f }));
+                    }}
+                />
+                <Field
+                    name={`${lvContext.parentField}[${props.dataItem[this.FORM_DATA_INDEX]}]._Status`}
+                    label={'Status'}
+                    component={MyComboBox}
+                    options={this.state.status ? this.state.status.map(f => { return { key: f, text: f }; }) : []}
+                />
+
+                <Field
+                    name={`${lvContext.parentField}[${props.dataItem[this.FORM_DATA_INDEX]}].Position`}
+                    label={'Position'}
+                    component={MyComboBox}
+                    options={this.state.positions ? this.state.positions.map(f => { return { key: f, text: f }; }) : []}
+                />
+                <Field
+                    name={`${lvContext.parentField}[${props.dataItem[this.FORM_DATA_INDEX]}].StartDate`}
+                    label={'Term Start Date'}
+                    component={DatePicker}
+                />
+                <h5>Term End Date goes here...</h5>
+                <h5>File Upload Goes here...</h5>
+            </div>
+        );
     }
 
     private MyFooter = () => {
