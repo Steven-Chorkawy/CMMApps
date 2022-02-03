@@ -5,7 +5,7 @@ import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, Dat
 import { ActionButton } from 'office-ui-fabric-react';
 
 import { INewMemberFormProps } from './INewMemberFormProps';
-import { CreateNewMember, GetChoiceColumn, GetListOfActiveCommittees } from '../../../ClaringtonHelperMethods/MyHelperMethods';
+import { CreateNewMember, GetChoiceColumn, GetListOfActiveCommittees, OnFormatDate } from '../../../ClaringtonHelperMethods/MyHelperMethods';
 import { NewCommitteeMemberFormComponent } from '../../../ClaringtonComponents/NewCommitteeMemberFormComponent';
 import { MyComboBox, PhoneInput, PostalCodeInput } from '../../../ClaringtonComponents/MyFormComponents';
 
@@ -61,7 +61,7 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
             <Field name={'Member.FirstName'} label={'First Name'} required={true} component={TextField} />
             <Field name={'Member.MiddleName'} label={'Middle Name'} component={TextField} />
             <Field name={'Member.LastName'} label={'Last Name'} required={true} component={TextField} />
-            <Field name={'Member.Birthday'} label={'Date of Birth'} component={DatePicker} />
+            <Field name={'Member.Birthday'} label={'Date of Birth'} component={DatePicker} formatDate={OnFormatDate} />
             <hr />
             <Field name={'Member.EMail'} label={'Email'} validator={emailValidator} component={EmailInput} />
             <Field name={'Member.Email2'} label={'Email 2'} validator={emailValidator} component={EmailInput} />
