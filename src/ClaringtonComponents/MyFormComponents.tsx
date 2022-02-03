@@ -1,5 +1,6 @@
 import * as React from "react";
 import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker } from '@fluentui/react';
+import { CalculateTermEndDate } from "../ClaringtonHelperMethods/MyHelperMethods";
 
 
 export const MyComboBox = (fieldRenderProps) => {
@@ -29,6 +30,15 @@ export const MyComboBox = (fieldRenderProps) => {
     <span>{description}</span>
   </div>;
 };
+
+export const MyDatePicker = fieldRenderProps => {
+  return <div>
+    <DatePicker
+      {...fieldRenderProps}
+      onSelectDate={e => fieldRenderProps.onChange({ value: e })}
+    />
+  </div>;
+}
 
 /**
      * Fluent UI's MaskedTextField is appending one extra character so this component will manually handle the OnChange event. 

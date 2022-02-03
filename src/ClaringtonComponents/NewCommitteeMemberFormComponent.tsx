@@ -1,10 +1,10 @@
 import * as React from 'react';
 
 import { Form, FormElement, Field, FormRenderProps, FieldArrayRenderProps, FieldArrayProps } from '@progress/kendo-react-form';
-import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker } from '@fluentui/react';
+import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker, Calendar } from '@fluentui/react';
 import { ActionButton } from 'office-ui-fabric-react';
 import { ListView, ListViewHeader, ListViewItemProps } from '@progress/kendo-react-listview';
-import { MyComboBox } from './MyFormComponents';
+import { MyComboBox, MyDatePicker } from './MyFormComponents';
 import { CalculateTermEndDate, FORM_DATA_INDEX, GetChoiceColumn, GetCommitteeByName, OnFormatDate } from '../ClaringtonHelperMethods/MyHelperMethods';
 import ICommitteeFileItem from '../ClaringtonInterfaces/ICommitteeFileItem';
 
@@ -13,6 +13,10 @@ export const NewCommitteeMemberContext = React.createContext<{
     parentField: string;
     activeCommittees: any[];
 }>({} as any);
+
+export interface INewCommitteeMemberFormComponentProps extends FieldArrayProps {
+    formRenderProps: FormRenderProps;
+}
 
 export interface INewCommitteeMemberFormComponentState {
     editIndex: number;
@@ -49,6 +53,10 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
                         GetChoiceColumn(e.value, 'Status').then(f => this.setState({ status: f }));
                         GetChoiceColumn(e.value, 'Position').then(f => this.setState({ positions: f }));
                         GetCommitteeByName(e.value).then(f => this.setState({ committeeFileItem: f }));
+                        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._EndDate`, { value: '' });
+                        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].StartDate`, { value: '' });
+                        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._Status`, { value: '' });
+                        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Position`, { value: '' });
                     }}
                 />
                 <Field
@@ -71,19 +79,25 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
                     label={'Term Start Date'}
                     //allowTextInput={true}
                     formatDate={OnFormatDate}
-                    component={DatePicker}
+                    component={MyDatePicker}
+                    onChange={e => {
+                        let calcEndDate = CalculateTermEndDate(e.value, this.state.committeeFileItem.TermLength);
+                        this.setState({
+                            calculatedEndDate: calcEndDate
+                        });
+
+                        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._EndDate`, { value: calcEndDate });
+                    }}
                     disabled={!this.state.committeeFileItem}
-                    onSelectDate={e => this.setState({ calculatedEndDate: CalculateTermEndDate(e, this.state.committeeFileItem.TermLength) })}
                 />
                 {
                     this.state.calculatedEndDate &&
                     <Field
                         name={`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._EndDate`}
                         label={'Term End Date'}
-                        value={this.state.calculatedEndDate ? this.state.calculatedEndDate : undefined}
                         formatDate={OnFormatDate}
                         component={DatePicker}
-                    // disabled={true}
+                        disabled={true}
                     />
                 }
                 <h5>File Upload Goes here...</h5>
@@ -92,7 +106,7 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
     }
 }
 
-export class NewCommitteeMemberFormComponent extends React.Component<FieldArrayProps, INewCommitteeMemberFormComponentState> {
+export class NewCommitteeMemberFormComponent extends React.Component<INewCommitteeMemberFormComponentProps, INewCommitteeMemberFormComponentState> {
     constructor(props) {
         super(props);
 
@@ -101,14 +115,16 @@ export class NewCommitteeMemberFormComponent extends React.Component<FieldArrayP
         };
     }
 
-    private editItemCloneRef: any = React.createRef();
-
     // Add a new item to the Form FieldArray that will be shown in the List
     private onAdd = (e) => {
         e.preventDefault();
         this.props.onPush({
             value: {
-                CommitteeName: ''
+                CommitteeName: '',
+                StartDate: '',
+                _EndDate: '',
+                _Status: '',
+                Position: ''
             },
         });
         this.setState({ editIndex: 0 });
@@ -126,7 +142,8 @@ export class NewCommitteeMemberFormComponent extends React.Component<FieldArrayP
         </ListViewHeader>);
     }
 
-    private NewCommitteeMemberFormItem = props => <NewCommitteeMemberFormItem {...props} listViewContext={React.useContext(NewCommitteeMemberContext)} />;
+    private NewCommitteeMemberFormItem = props =>
+        <NewCommitteeMemberFormItem {...props} listViewContext={React.useContext(NewCommitteeMemberContext)} formRenderProps={this.props.formRenderProps} />
 
     public render() {
         const dataWithIndexes = this.props.value?.map((item, index) => {

@@ -85,6 +85,7 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
                 name={'TestList'}
                 component={NewCommitteeMemberFormComponent}
                 activeCommittees={this.state.activeCommittees}
+                formRenderProps={formRenderProps}
               />
             }
             <hr />
