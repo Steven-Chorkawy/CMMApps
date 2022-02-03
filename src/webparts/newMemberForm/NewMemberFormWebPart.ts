@@ -23,7 +23,8 @@ export default class NewMemberFormWebPart extends BaseClientSideWebPart<INewMemb
     const element: React.ReactElement<INewMemberFormProps> = React.createElement(
       NewMemberForm,
       {
-        description: this.properties.description
+        description: this.properties.description,
+        context: this.context
       }
     );
 

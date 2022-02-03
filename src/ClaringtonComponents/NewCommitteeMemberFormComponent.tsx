@@ -1,12 +1,16 @@
 import * as React from 'react';
 
 import { Form, FormElement, Field, FormRenderProps, FieldArrayRenderProps, FieldArrayProps } from '@progress/kendo-react-form';
+import { FilePicker, IFilePickerResult } from '@pnp/spfx-controls-react/lib/FilePicker';
+
 import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker, Calendar, getTheme } from '@fluentui/react';
 import { ActionButton } from 'office-ui-fabric-react';
 import { ListView, ListViewHeader, ListViewItemProps } from '@progress/kendo-react-listview';
 import { MyComboBox, MyDatePicker } from './MyFormComponents';
 import { CalculateTermEndDate, FORM_DATA_INDEX, GetChoiceColumn, GetCommitteeByName, OnFormatDate } from '../ClaringtonHelperMethods/MyHelperMethods';
 import ICommitteeFileItem from '../ClaringtonInterfaces/ICommitteeFileItem';
+import { WebPartContext } from '@microsoft/sp-webpart-base';
+import { sp } from '@pnp/sp';
 
 
 export const NewCommitteeMemberContext = React.createContext<{
@@ -16,6 +20,7 @@ export const NewCommitteeMemberContext = React.createContext<{
 
 export interface INewCommitteeMemberFormComponentProps extends FieldArrayProps {
     formRenderProps: FormRenderProps;
+    context: WebPartContext;
 }
 
 export interface INewCommitteeMemberFormComponentState {
@@ -28,6 +33,7 @@ export interface INewCommitteeMemberFormItemState {
     committeeFileItem?: ICommitteeFileItem;
     selectedStartDate?: Date;
     calculatedEndDate?: Date;
+    pendingFiles?: any;
 }
 
 export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitteeMemberFormItemState> {
@@ -36,7 +42,8 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
         this.state = {
             positions: [],
             status: [],
-            committeeFileItem: undefined
+            committeeFileItem: undefined,
+            pendingFiles: []
         };
     }
 
@@ -101,7 +108,46 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
                         disabled={true}
                     />
                 }
-                <h5>File Upload Goes here...</h5>
+                {
+                    // MS is working on allowing users to select multiple files from a library. https://github.com/pnp/sp-dev-fx-controls-react/pull/1047                
+                }
+                <FilePicker
+                    // accepts={[".gif", ".jpg", ".jpeg", ".bmp", ".dib", ".tif", ".tiff", ".ico", ".png", ".jxr", ".svg"]}
+                    buttonIcon="FileImage"
+                    buttonLabel='Select Files'
+                    label={'Upload Attachments'}
+                    onSave={(filePickerResult: IFilePickerResult[]) => {
+                        console.log('onSave');
+                        console.log(filePickerResult);
+                        let currentFiles = this.state.pendingFiles;
+                        currentFiles.push(...filePickerResult);
+                        this.setState({ pendingFiles: currentFiles });
+                        filePickerResult.map(fpr => {
+                            fpr.downloadFileContent().then(fileContent => {
+                                sp.web.getFolderByServerRelativeUrl('/sites/CMM/Shared%20Documents/Hello').files.add(fpr.fileName, fileContent, true);
+                            });
+                        })
+                    }}
+                    onChange={(filePickerResult: IFilePickerResult[]) => {
+                        console.log('onChange');
+                        console.log(filePickerResult);
+                    }}
+                    context={this.props.context}
+                    hideStockImages={true}
+                    hideLinkUploadTab={true}
+                    hideLocalUploadTab={true}
+                    hideRecentTab={true}
+                />
+                {this.state.pendingFiles.map(f => { return <div><span>Name: {f.fileName}</span> | <span>Size: {f.fileSize}</span></div>; })}
+
+                {/* <Field
+                    name={`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Files`}
+                    batch={false}
+                    multiple={true}
+                    defaultFiles={[]}
+
+                    component={Upload}
+                /> */}
             </div>
         );
     }
@@ -144,7 +190,7 @@ export class NewCommitteeMemberFormComponent extends React.Component<INewCommitt
     }
 
     private NewCommitteeMemberFormItem = props =>
-        <NewCommitteeMemberFormItem {...props} listViewContext={React.useContext(NewCommitteeMemberContext)} formRenderProps={this.props.formRenderProps} />
+        <NewCommitteeMemberFormItem {...props} context={this.props.context} listViewContext={React.useContext(NewCommitteeMemberContext)} formRenderProps={this.props.formRenderProps} />
 
     public render() {
         const dataWithIndexes = this.props.value?.map((item, index) => {
