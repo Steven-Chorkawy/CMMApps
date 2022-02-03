@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as ReactDOM from "react-dom";
 
 import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker } from '@fluentui/react';
-import { ActionButton } from 'office-ui-fabric-react';
 
 import { INewMemberFormProps } from './INewMemberFormProps';
 import { CreateNewMember, GetChoiceColumn, GetListOfActiveCommittees, OnFormatDate } from '../../../ClaringtonHelperMethods/MyHelperMethods';
@@ -10,9 +9,6 @@ import { NewCommitteeMemberFormComponent } from '../../../ClaringtonComponents/N
 import { MyComboBox, PhoneInput, PostalCodeInput } from '../../../ClaringtonComponents/MyFormComponents';
 
 import { Form, FormElement, Field, FieldArray, FieldArrayProps } from '@progress/kendo-react-form';
-
-
-const FORM_DATA_INDEX = "formDataIndex";
 
 export default class NewMemberForm extends React.Component<INewMemberFormProps, any> {
   constructor(props) {
