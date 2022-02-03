@@ -3,9 +3,9 @@ import * as React from 'react';
 import { Form, FormElement, Field, FormRenderProps, FieldArrayRenderProps, FieldArrayProps } from '@progress/kendo-react-form';
 import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker } from '@fluentui/react';
 import { ActionButton } from 'office-ui-fabric-react';
-import { ListView, ListViewHeader } from '@progress/kendo-react-listview';
+import { ListView, ListViewHeader, ListViewItemProps } from '@progress/kendo-react-listview';
 import { MyComboBox } from './MyFormComponents';
-import { GetChoiceColumn, GetCommitteeByName, OnFormatDate } from '../ClaringtonHelperMethods/MyHelperMethods';
+import { CalculateTermEndDate, FORM_DATA_INDEX, GetChoiceColumn, GetCommitteeByName, OnFormatDate } from '../ClaringtonHelperMethods/MyHelperMethods';
 import ICommitteeFileItem from '../ClaringtonInterfaces/ICommitteeFileItem';
 
 
@@ -16,11 +16,80 @@ export const NewCommitteeMemberContext = React.createContext<{
 
 export interface INewCommitteeMemberFormComponentState {
     editIndex: number;
+}
+
+export interface INewCommitteeMemberFormItemState {
     positions: string[];
     status: string[];
     committeeFileItem?: ICommitteeFileItem;
     selectedStartDate?: Date;
     calculatedEndDate?: Date;
+}
+
+export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitteeMemberFormItemState> {
+    constructor(props) {
+        super(props);
+        this.state = {
+            positions: [],
+            status: [],
+            committeeFileItem: undefined
+        };
+    }
+
+    public render() {
+        return (
+            <div>
+                <Field
+                    name={`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].CommitteeName`}
+                    label={`Select Committee`}
+                    component={MyComboBox}
+                    options={this.props.listViewContext.activeCommittees.map(value => { return { key: value.Title, text: value.Title }; })}
+                    description={this.state.committeeFileItem ? `Term Length: ${this.state.committeeFileItem.TermLength} years.` : ""}
+                    onChange={(e) => {
+                        GetChoiceColumn(e.value, 'Status').then(f => this.setState({ status: f }));
+                        GetChoiceColumn(e.value, 'Position').then(f => this.setState({ positions: f }));
+                        GetCommitteeByName(e.value).then(f => this.setState({ committeeFileItem: f }));
+                    }}
+                />
+                <Field
+                    name={`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._Status`}
+                    label={'Status'}
+                    component={MyComboBox}
+                    disabled={!this.state.committeeFileItem}
+                    options={this.state.status ? this.state.status.map(f => { return { key: f, text: f }; }) : []}
+                />
+
+                <Field
+                    name={`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Position`}
+                    label={'Position'}
+                    component={MyComboBox}
+                    disabled={!this.state.committeeFileItem}
+                    options={this.state.positions ? this.state.positions.map(f => { return { key: f, text: f }; }) : []}
+                />
+                <Field
+                    name={`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].StartDate`}
+                    label={'Term Start Date'}
+                    //allowTextInput={true}
+                    formatDate={OnFormatDate}
+                    component={DatePicker}
+                    disabled={!this.state.committeeFileItem}
+                    onSelectDate={e => this.setState({ calculatedEndDate: CalculateTermEndDate(e, this.state.committeeFileItem.TermLength) })}
+                />
+                {
+                    this.state.calculatedEndDate &&
+                    <Field
+                        name={`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._EndDate`}
+                        label={'Term End Date'}
+                        value={this.state.calculatedEndDate ? this.state.calculatedEndDate : undefined}
+                        formatDate={OnFormatDate}
+                        component={DatePicker}
+                    // disabled={true}
+                    />
+                }
+                <h5>File Upload Goes here...</h5>
+            </div>
+        );
+    }
 }
 
 export class NewCommitteeMemberFormComponent extends React.Component<FieldArrayProps, INewCommitteeMemberFormComponentState> {
@@ -29,13 +98,8 @@ export class NewCommitteeMemberFormComponent extends React.Component<FieldArrayP
 
         this.state = {
             editIndex: 0,
-            positions: [],
-            status: [],
-            committeeFileItem: undefined
         };
     }
-
-    private FORM_DATA_INDEX = "formDataIndex";
 
     private editItemCloneRef: any = React.createRef();
 
@@ -50,66 +114,6 @@ export class NewCommitteeMemberFormComponent extends React.Component<FieldArrayP
         this.setState({ editIndex: 0 });
     }
 
-    private _calculateEndDate = (startDate: Date, termLength: number): Date => {
-        return new Date(startDate.getFullYear() + termLength, startDate.getMonth(), startDate.getDate());
-    }
-
-    private NewCommitteeMemberFormItem = (props) => {
-        const lvContext = React.useContext(NewCommitteeMemberContext);
-        return (
-            <div>
-                <Field
-                    name={`${lvContext.parentField}[${props.dataItem[this.FORM_DATA_INDEX]}].CommitteeName`}
-                    label={`Select Committee`}
-                    component={MyComboBox}
-                    options={lvContext.activeCommittees.map(value => { return { key: value.Title, text: value.Title }; })}
-                    description={this.state.committeeFileItem ? `Term Length: ${this.state.committeeFileItem.TermLength} years.` : ""}
-                    onChange={(e) => {
-                        GetChoiceColumn(e.value, 'Status').then(f => this.setState({ status: f }));
-                        GetChoiceColumn(e.value, 'Position').then(f => this.setState({ positions: f }));
-                        GetCommitteeByName(e.value).then(f => this.setState({ committeeFileItem: f }));
-                    }}
-                />
-                <Field
-                    name={`${lvContext.parentField}[${props.dataItem[this.FORM_DATA_INDEX]}]._Status`}
-                    label={'Status'}
-                    component={MyComboBox}
-                    disabled={!this.state.committeeFileItem}
-                    options={this.state.status ? this.state.status.map(f => { return { key: f, text: f }; }) : []}
-                />
-
-                <Field
-                    name={`${lvContext.parentField}[${props.dataItem[this.FORM_DATA_INDEX]}].Position`}
-                    label={'Position'}
-                    component={MyComboBox}
-                    disabled={!this.state.committeeFileItem}
-                    options={this.state.positions ? this.state.positions.map(f => { return { key: f, text: f }; }) : []}
-                />
-                <Field
-                    name={`${lvContext.parentField}[${props.dataItem[this.FORM_DATA_INDEX]}].StartDate`}
-                    label={'Term Start Date'}
-                    //allowTextInput={true}
-                    formatDate={OnFormatDate}
-                    component={DatePicker}
-                    disabled={!this.state.committeeFileItem}
-                    onSelectDate={e => this.setState({ calculatedEndDate: this._calculateEndDate(e, this.state.committeeFileItem.TermLength) })}
-                />
-                {
-                    this.state.calculatedEndDate &&
-                    <Field
-                        name={`${lvContext.parentField}[${props.dataItem[this.FORM_DATA_INDEX]}]._EndDate`}
-                        label={'Term End Date'}
-                        value={this.state.calculatedEndDate ? this.state.calculatedEndDate : undefined}
-                        formatDate={OnFormatDate}
-                        component={DatePicker}
-                    // disabled={true}
-                    />
-                }
-                <h5>File Upload Goes here...</h5>
-            </div>
-        );
-    }
-
     private MyFooter = () => {
         return (<ListViewHeader
             style={{
@@ -122,12 +126,13 @@ export class NewCommitteeMemberFormComponent extends React.Component<FieldArrayP
         </ListViewHeader>);
     }
 
+    private NewCommitteeMemberFormItem = props => <NewCommitteeMemberFormItem {...props} listViewContext={React.useContext(NewCommitteeMemberContext)} />;
+
     public render() {
         const dataWithIndexes = this.props.value?.map((item, index) => {
-            return { ...item, [this.FORM_DATA_INDEX]: index };
+            return { ...item, [FORM_DATA_INDEX]: index };
         });
         const { validationMessage, visited, name, dataItemKey } = this.props;
-
         return (
             <NewCommitteeMemberContext.Provider value={{
                 parentField: name,

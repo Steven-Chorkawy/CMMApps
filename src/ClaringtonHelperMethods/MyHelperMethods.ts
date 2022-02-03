@@ -15,7 +15,11 @@ import { ListItemAccessor } from "@microsoft/sp-listview-extensibility";
 import ICommitteeFileItem from "../ClaringtonInterfaces/ICommitteeFileItem";
 
 
-//#region Format
+//#region Constants
+export const FORM_DATA_INDEX = "formDataIndex";
+//#endregion
+
+//#region Formatters
 /**
  * Format Fluent UI DatePicker.
  * @param date Date input from Fluent UI DatePicker
@@ -23,6 +27,14 @@ import ICommitteeFileItem from "../ClaringtonInterfaces/ICommitteeFileItem";
  */
 export const OnFormatDate = (date?: Date): string => {
     return !date ? '' : (date.getMonth() + 1) + '/' + date.getDate() + '/' + (date.getFullYear());
+};
+
+/**
+ * Calculate a term end date.
+ * Term End Date = start date + Term Length.
+ */
+export const CalculateTermEndDate = (startDate: Date, termLength: number): Date => {
+    return new Date(startDate.getFullYear() + termLength, startDate.getMonth(), startDate.getDate());
 };
 
 //#endregion
