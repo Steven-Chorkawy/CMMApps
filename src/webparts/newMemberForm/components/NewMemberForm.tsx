@@ -8,6 +8,7 @@ import { ActionButton, concatStyleSetsWithProps } from 'office-ui-fabric-react';
 import { INewMemberFormProps } from './INewMemberFormProps';
 import { CreateNewMember, GetListOfActiveCommittees } from '../../../ClaringtonHelperMethods/MyHelperMethods';
 import { NewCommitteeMemberFormComponent, _N } from '../../../ClaringtonComponents/NewCommitteeMemberFormComponent';
+import { MyComboBox } from '../../../ClaringtonComponents/MyFormComponents';
 
 import { Error } from '@progress/kendo-react-labels';
 import { Grid, GridColumn, GridToolbar } from '@progress/kendo-react-grid';
@@ -15,6 +16,7 @@ import { Form, FormElement, Field, FieldArray, FieldArrayProps } from '@progress
 import { Input, NumericTextBox } from '@progress/kendo-react-inputs';
 import { clone } from '@progress/kendo-react-common';
 import { ListView, ListViewHeader } from '@progress/kendo-react-listview';
+
 
 const FORM_DATA_INDEX = "formDataIndex";
 
@@ -85,7 +87,7 @@ export const _NN = (fieldArrayRenderProps) => {
       />
     </WTF_IS_THIS_Context.Provider>
   );
-}
+};
 //#endregion
 
 //#region Array Basic List Text
@@ -95,20 +97,18 @@ export const ListViewContext = React.createContext<{
 }>({} as any);
 
 class TestList extends React.Component<FieldArrayProps> {
-  /**
-   *
-   */
   constructor(props) {
     super(props);
-  }
-  editItemCloneRef: any = React.createRef();
 
-  state = {
-    editIndex: 0,
-  };
+    this.state = {
+      editIndex: 0,
+    };
+  }
+
+  private editItemCloneRef: any = React.createRef();
 
   // Add a new item to the Form FieldArray that will be shown in the List
-  onAdd = (e) => {
+  private onAdd = (e) => {
     e.preventDefault();
     this.props.onPush({
       value: {
@@ -117,9 +117,9 @@ class TestList extends React.Component<FieldArrayProps> {
       },
     });
     this.setState({ editIndex: 0 });
-  };
+  }
 
-  NewCommitteeMemberFormItem = (props) => {
+  private NewCommitteeMemberFormItem = (props) => {
     const lvContext = React.useContext(ListViewContext);
 
     return (
@@ -128,14 +128,14 @@ class TestList extends React.Component<FieldArrayProps> {
         <Field
           name={`${lvContext.parentField}[${props.dataItem[FORM_DATA_INDEX]}].HardCodeName`}
           label={`Text`}
-          component={ComboBox}
+          component={MyComboBox}
           options={lvContext.activeCommittees.map(value => { return { key: value.Title, text: value.Title }; })}
         />
       </div>
     );
-  };
+  }
 
-  MyFooter = () => {
+  private MyFooter = () => {
     return (<ListViewHeader
       style={{
         color: "rgb(160, 160, 160)",
@@ -145,7 +145,7 @@ class TestList extends React.Component<FieldArrayProps> {
     >
       <ActionButton iconProps={{ iconName: 'Add' }} onClick={this.onAdd}>Add Committee</ActionButton>
     </ListViewHeader>);
-  };
+  }
 
 
   public render() {
@@ -228,21 +228,6 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
       return <MyMaskedInput {...fieldRenderProps} mask="a9a 9a9" />;
     };
 
-
-    const _myComboBox = (fieldRenderProps) => {
-      const { label, options, value, onChange } = fieldRenderProps;
-
-      return <ComboBox
-        label={label}
-        options={options}
-        onChange={(event, option) => {
-          event.preventDefault();
-          // ! This calls the fields onChange event which in turn passes the new selected value to the form state.
-          onChange({ value: option.text });
-        }}
-      />;
-    };
-
     return (<div>
       <Form
         onSubmit={this._onSubmit}
@@ -271,7 +256,7 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
             {/** !!! TODO: Get these values from SharePoint, not hard coded.  */}
             <Field name={'Member.Province'}
               label={'Province'}
-              component={_myComboBox}
+              component={MyComboBox}
               options={[
                 { id: 'Alberta', text: 'Alberta' },
                 { id: 'British Columbia', text: 'British Columbia' },
