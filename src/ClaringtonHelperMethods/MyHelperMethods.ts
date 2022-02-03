@@ -13,6 +13,13 @@ import IMemberListItem from "../ClaringtonInterfaces/IMemberListItem";
 import { MyLists } from "./MyLists";
 
 
+export const GetChoiceColumn = async (listTitle: string, columnName: string): Promise<string[]> => {
+    console.log(listTitle);
+    console.log(columnName);
+    let choiceColumn: any = await sp.web.lists.getByTitle(listTitle).fields.getByTitle(columnName).select('Choices').get();
+    console.log(choiceColumn);
+    return choiceColumn.Choices;
+};
 
 export const CreateNewMember = async (member: IMemberListItem): Promise<any> => {
     console.log('CreateNewMember');

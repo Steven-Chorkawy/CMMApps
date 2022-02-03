@@ -11,6 +11,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import * as strings from 'NewMemberFormWebPartStrings';
 import NewMemberForm from './components/NewMemberForm';
 import { INewMemberFormProps } from './components/INewMemberFormProps';
+import { GetChoiceColumn } from '../../ClaringtonHelperMethods/MyHelperMethods';
 
 export interface INewMemberFormWebPartProps {
   description: string;
