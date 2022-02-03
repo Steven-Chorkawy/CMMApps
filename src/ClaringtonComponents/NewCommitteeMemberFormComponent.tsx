@@ -30,8 +30,7 @@ export class NewCommitteeMemberFormComponent extends React.Component<FieldArrayP
         e.preventDefault();
         this.props.onPush({
             value: {
-                id: "",
-                name: "",
+                CommitteeName: ''
             },
         });
         this.setState({ editIndex: 0 });

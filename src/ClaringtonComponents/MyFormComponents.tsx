@@ -26,7 +26,7 @@ export const MyMaskedInput = (fieldRenderProps) => {
     {...fieldRenderProps}
     onChange={(event, newValue) => fieldRenderProps.onChange({ name: fieldRenderProps.name, value: { value: newValue } })}
   />;
-}
+};
 
 export const PhoneInput = (fieldRenderProps) => <MyMaskedInput {...fieldRenderProps} mask="(999) 999-9999" />;
 

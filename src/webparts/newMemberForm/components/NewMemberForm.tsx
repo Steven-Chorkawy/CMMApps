@@ -5,25 +5,29 @@ import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, Dat
 import { ActionButton } from 'office-ui-fabric-react';
 
 import { INewMemberFormProps } from './INewMemberFormProps';
-import { CreateNewMember, GetListOfActiveCommittees } from '../../../ClaringtonHelperMethods/MyHelperMethods';
+import { CreateNewMember, GetChoiceColumn, GetListOfActiveCommittees } from '../../../ClaringtonHelperMethods/MyHelperMethods';
 import { NewCommitteeMemberFormComponent } from '../../../ClaringtonComponents/NewCommitteeMemberFormComponent';
 import { MyComboBox, PhoneInput, PostalCodeInput } from '../../../ClaringtonComponents/MyFormComponents';
 
 import { Form, FormElement, Field, FieldArray, FieldArrayProps } from '@progress/kendo-react-form';
-import { ListView, ListViewHeader } from '@progress/kendo-react-listview';
+
 
 const FORM_DATA_INDEX = "formDataIndex";
-
 
 export default class NewMemberForm extends React.Component<INewMemberFormProps, any> {
   constructor(props) {
     super(props);
     this.state = {
       activeCommittees: [],
+      provinces: []
     };
 
     GetListOfActiveCommittees().then(value => {
       this.setState({ activeCommittees: value });
+    });
+
+    GetChoiceColumn('Members', 'Province').then(value => {
+      this.setState({ provinces: value });
     });
   }
 
@@ -43,7 +47,7 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
     const EmailInput = (fieldRenderProps) => {
       const { validationMessage, visited, ...others } = fieldRenderProps;
       return <TextField {...others} errorMessage={visited && validationMessage && validationMessage} />;
-    }
+    };
 
     return (<div>
       <Form
@@ -74,21 +78,7 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
             <Field name={'Member.Province'}
               label={'Province'}
               component={MyComboBox}
-              options={[
-                { id: 'Alberta', text: 'Alberta' },
-                { id: 'British Columbia', text: 'British Columbia' },
-                { id: 'Manitoba', text: 'Manitoba' },
-                { id: 'New Brunswick', text: 'New Brunswick' },
-                { id: 'Newfoundland and Labrador', text: 'Newfoundland and Labrador' },
-                { id: 'Northwest Territories', text: 'Northwest Territories' },
-                { id: 'Nova Scotia', text: 'Nova Scotia' },
-                { id: 'Nunavut', text: 'Nunavut' },
-                { id: 'Ontario', text: 'Ontario' },
-                { id: 'Prince Edward Island', text: 'Prince Edward Island' },
-                { id: 'Quebec', text: 'Quebec' },
-                { id: 'Saskatchewan', text: 'Saskatchewan' },
-                { id: 'Yukon', text: 'Yukon' }
-              ]}
+              options={this.state.provinces ? this.state.provinces.map(f => { return { key: f, text: f }; }) : []}
             />
 
             <hr />
