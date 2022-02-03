@@ -3,7 +3,7 @@ import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, Dat
 
 
 export const MyComboBox = (fieldRenderProps) => {
-  const { label, options, value, onChange } = fieldRenderProps;
+  const { label, options, value, required, onChange } = fieldRenderProps;
   return <ComboBox
     label={label}
     options={options}
@@ -12,6 +12,7 @@ export const MyComboBox = (fieldRenderProps) => {
       // ! This calls the fields onChange event which in turn passes the new selected value to the form state.
       onChange({ value: option.text });
     }}
+    required={required}
   />;
 };
 
