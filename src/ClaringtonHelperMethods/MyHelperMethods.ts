@@ -16,6 +16,7 @@ import ICommitteeFileItem from "../ClaringtonInterfaces/ICommitteeFileItem";
 import { IItemAddResult, IItemUpdateResult } from "@pnp/sp/items";
 import { IContentTypeInfo } from "@pnp/sp/content-types";
 import { IFolderAddResult } from "@pnp/sp/folders";
+import { ICommitteeMemberHistoryListItem } from "../ClaringtonInterfaces/ICommitteeMemberHistoryListItem";
 
 
 //#region Constants
@@ -55,6 +56,29 @@ export const CalculateTermEndDate = (startDate: Date, termLength: number): Date 
     return new Date(startDate.getFullYear() + termLength, startDate.getMonth(), startDate.getDate());
 };
 
+/**
+ * Calculate a committee members personal contact information retention period.
+ * Personal Contact Information retention period = last committee term end date + 5 years.
+ * @param memberId ID of the member that we are trying to calculate for.
+ * @returns The date the members personal contact info should be deleted.
+ */
+export const CalculateMemberInfoRetention = async (memberId: number): Promise<{ date, committee }> => {
+    let output: Date = undefined;
+    let committeeName: string = undefined;
+    const RETENTION_PERIOD = 5; // Retention is 5 years + last Term End Date.
+    let memberHistory = await sp.web.lists.getByTitle(MyLists.CommitteeMemberHistory).items
+        .filter(`SPFX_CommitteeMemberDisplayNameId eq ${memberId}`)
+        .orderBy('OData__EndDate', false).get();
+
+    if (memberHistory && memberHistory.length > 0) {
+        let tmpDate = new Date(memberHistory[0].OData__EndDate);
+        output = new Date(tmpDate.getFullYear() + RETENTION_PERIOD, tmpDate.getMonth(), tmpDate.getDate());
+        committeeName = memberHistory[0].CommitteeName;
+        debugger;
+    }
+
+    return { date: output, committee: committeeName };
+};
 //#endregion
 
 //#region Create
@@ -85,7 +109,7 @@ export const CreateNewCommitteeMember = async (memberId: number, committee: any)
     console.log(docSet);
 
     // Step 2: Update Metadata.
-    await sp.web.lists.getByTitle(committee.CommitteeName).items.getById(docSet.ID).update({
+    sp.web.lists.getByTitle(committee.CommitteeName).items.getById(docSet.ID).update({
         OData__EndDate: committee._EndDate,
         StartDate: committee.StartDate,
         Position: committee.Position,
@@ -103,6 +127,20 @@ export const CreateNewCommitteeMember = async (memberId: number, committee: any)
     }
 
     // Step 4: Update Committee Member List Item to include this new committee.
+    // TODO: How do I manage this relationship? 
+
+    // Step 5: Create a committee member history list item record.
+    CreateCommitteeMemberHistoryItem({
+        CommitteeName: committee.CommitteeName,
+        OData__EndDate: committee._EndDate,
+        StartDate: committee.StartDate,
+        FirstName: member.FirstName,
+        LastName: member.LastName,
+        SPFX_CommitteeMemberDisplayNameId: memberId,
+        MemberID: memberId.toString(),
+        Title: `${member.FirstName} ${member.LastName}`
+    });
+
 };
 
 export const CreateDocumentSet = async (input): Promise<IItemUpdateResult> => {
@@ -131,6 +169,17 @@ export const CreateDocumentSet = async (input): Promise<IItemUpdateResult> => {
     let newFolderProperties = await sp.web.getFolderByServerRelativeUrl(newFolderResult.data.ServerRelativeUrl).listItemAllFields.get();
     return await sp.web.lists.getByTitle(input.LibraryTitle).items.getById(newFolderProperties.ID).update({
         ContentTypeId: libraryDocumentSetContentTypeId
+    });
+};
+
+export const CreateCommitteeMemberHistoryItem = async (committeeMemberHistoryItem: ICommitteeMemberHistoryListItem) => {
+    await sp.web.lists.getByTitle(MyLists.CommitteeMemberHistory).items.add({ ...committeeMemberHistoryItem });
+
+    let committeeMemberContactInfoRetention = await CalculateMemberInfoRetention(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId);
+    debugger;
+    sp.web.lists.getByTitle(MyLists.Members).items.getById(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId).update({
+        RetentionDate: committeeMemberContactInfoRetention.date,
+        RetentionDateCommittee: committeeMemberContactInfoRetention.committee
     });
 };
 //#endregion

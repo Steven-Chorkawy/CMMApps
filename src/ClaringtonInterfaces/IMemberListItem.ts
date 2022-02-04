@@ -18,4 +18,6 @@ export default interface IMemberListItem {
     WorkCountry?: string;   // Default to Canada in SharePoint.
     PostalCode?: string;
     Province?: string;      // This is a Choice column in SharePoint.
+    RetentionDate?: string;
+    RetentionDateCommittee?: string;
 }
