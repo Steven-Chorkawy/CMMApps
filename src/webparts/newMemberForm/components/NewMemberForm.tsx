@@ -4,7 +4,7 @@ import * as ReactDOM from "react-dom";
 import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker, getTheme } from '@fluentui/react';
 
 import { INewMemberFormProps } from './INewMemberFormProps';
-import { CreateNewMember, GetChoiceColumn, GetListOfActiveCommittees, OnFormatDate } from '../../../ClaringtonHelperMethods/MyHelperMethods';
+import { CreateNewCommitteeMember, CreateNewMember, GetChoiceColumn, GetListOfActiveCommittees, OnFormatDate } from '../../../ClaringtonHelperMethods/MyHelperMethods';
 import { NewCommitteeMemberFormComponent } from '../../../ClaringtonComponents/NewCommitteeMemberFormComponent';
 import { MyComboBox, PhoneInput, PostalCodeInput } from '../../../ClaringtonComponents/MyFormComponents';
 
@@ -27,11 +27,21 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
     });
   }
 
-  private _onSubmit = values => {
+  private _onSubmit = async (values) => {
     console.log('_onSubmit');
     console.log(values);
-    // TODO: Uncomment this when I am done testing.
-    //CreateNewMember(values.Member);
+
+    // Step 1: Create a new Member List Item.
+    let newMemberItemAddResult = await CreateNewMember(values.Member);
+    console.log('first then');
+    console.log(newMemberItemAddResult);
+
+    // Step 2: Add the new member to committees if any are provided. 
+    if (values.Committees) {
+      for (let committeeIndex = 0; committeeIndex < values.Committees.length; committeeIndex++) {
+        await CreateNewCommitteeMember(newMemberItemAddResult.data.ID, values.Committees[committeeIndex]);
+      }
+    }
 
     console.log('end of _onSubmit');
   }
@@ -49,7 +59,6 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
     return (<div>
       <Form
         onSubmit={this._onSubmit}
-        initialValues={{ Member: { FirstName: 'a', LastName: 'b' } }}
         render={(formRenderProps) => (
           <FormElement>
             <h2>Add New Member</h2>

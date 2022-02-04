@@ -13,6 +13,9 @@ import IMemberListItem from "../ClaringtonInterfaces/IMemberListItem";
 import { MyLists } from "./MyLists";
 import { ListItemAccessor } from "@microsoft/sp-listview-extensibility";
 import ICommitteeFileItem from "../ClaringtonInterfaces/ICommitteeFileItem";
+import { IItemAddResult, IItemUpdateResult } from "@pnp/sp/items";
+import { IContentTypeInfo } from "@pnp/sp/content-types";
+import { IFolderAddResult } from "@pnp/sp/folders";
 
 
 //#region Constants
@@ -30,6 +33,21 @@ export const OnFormatDate = (date?: Date): string => {
 };
 
 /**
+ * Format a path to a document set that will be created.
+ * @param libraryTitle Title of Library
+ * @param title Title of new Folder/Document Set to be created.
+ * @returns Path to Document set as string.
+ */
+export const FormatDocumentSetPath = async (libraryTitle: string, title: string): Promise<string> => {
+    let library = await sp.web.lists.getByTitle(libraryTitle).select('Title', 'RootFolder/ServerRelativeUrl').expand('RootFolder').get();
+    return `${library.RootFolder.ServerRelativeUrl}/${title}`;
+};
+
+export const CheckForExistingDocumentSetByServerRelativePath = async (serverRelativePath: string): Promise<boolean> => {
+    return await (await sp.web.getFolderByServerRelativePath(serverRelativePath).select('Exists').get()).Exists;
+};
+
+/**
  * Calculate a term end date.
  * Term End Date = start date + Term Length.
  */
@@ -40,12 +58,80 @@ export const CalculateTermEndDate = (startDate: Date, termLength: number): Date 
 //#endregion
 
 //#region Create
-export const CreateNewMember = async (member: IMemberListItem): Promise<any> => {
+export const CreateNewMember = async (member: IMemberListItem): Promise<IItemAddResult> => {
     console.log('CreateNewMember');
     member.Title = `${member.FirstName}, ${member.LastName}`;
     // add an item to the list
     let iar = await sp.web.lists.getByTitle(MyLists.Members).items.add(member);
     return iar;
+};
+
+/**
+ * Create a document set for an existing member in a committee library.
+ * @param member ID of the member to add to a committee.
+ * @param committee Committee to add member to.
+ * TODO: What type should the committee param be?
+ */
+export const CreateNewCommitteeMember = async (memberId: number, committee: any): Promise<any> => {
+    console.log('CreteNewCommitteeMember');
+    console.log(committee);
+
+    let member = await sp.web.lists.getByTitle(MyLists.Members).items.getById(memberId).get();
+    const PATH_TO_DOC_SET = await FormatDocumentSetPath(committee.CommitteeName, member.Title);
+
+    // Step 1: Create the document set.
+    let docSet = await (await CreateDocumentSet({ LibraryTitle: committee.CommitteeName, Title: member.Title })).item.get();
+    console.log('doc set');
+    console.log(docSet);
+
+    // Step 2: Update Metadata.
+    await sp.web.lists.getByTitle(committee.CommitteeName).items.getById(docSet.ID).update({
+        OData__EndDate: committee._EndDate,
+        StartDate: committee.StartDate,
+        Position: committee.Position,
+        OData__Status: committee._Status,
+        SPFX_CommitteeMemberDisplayNameId: memberId
+    });
+
+    // Step 3: Upload Attachments. 
+    if (committee.Files) {
+        committee.Files.map(file => {
+            file.downloadFileContent().then(fileContent => {
+                sp.web.getFolderByServerRelativeUrl(PATH_TO_DOC_SET).files.add(file.fileName, fileContent, true);
+            });
+        });
+    }
+
+    // Step 4: Update Committee Member List Item to include this new committee.
+};
+
+export const CreateDocumentSet = async (input): Promise<IItemUpdateResult> => {
+    let newFolderResult: IFolderAddResult;
+    let FOLDER_NAME = await FormatDocumentSetPath(input.LibraryTitle, input.Title);
+    let libraryDocumentSetContentTypeId;
+
+    try {
+        libraryDocumentSetContentTypeId = await GetLibraryContentTypes(input.LibraryTitle);
+        if (!libraryDocumentSetContentTypeId) {
+            throw "Error! Cannot get content type for library.";
+        }
+
+        // Because sp.web.folders.add overwrites existing folder I have to do a manual check.
+        if (await CheckForExistingDocumentSetByServerRelativePath(FOLDER_NAME)) {
+            throw `Error! Cannot Create new Document Set. Duplicate Name detected. "${FOLDER_NAME}"`;
+        }
+
+        newFolderResult = await sp.web.folders.add(FOLDER_NAME);
+    } catch (error) {
+        console.error(error);
+        debugger;
+        throw error;
+    }
+
+    let newFolderProperties = await sp.web.getFolderByServerRelativeUrl(newFolderResult.data.ServerRelativeUrl).listItemAllFields.get();
+    return await sp.web.lists.getByTitle(input.LibraryTitle).items.getById(newFolderProperties.ID).update({
+        ContentTypeId: libraryDocumentSetContentTypeId
+    });
 };
 //#endregion
 
@@ -86,5 +172,10 @@ export const GetCommitteeByName = async (committeeName: string): Promise<ICommit
 export const GetListOfActiveCommittees = async (): Promise<any> => {
     // TODO: Remove hard coded content type id.
     return await sp.web.lists.getByTitle(MyLists.CommitteeFiles).items.filter("OData__Status eq 'Active' and ContentTypeId eq '0x0120D52000BD403A8C219D9A40B835B291EFC822540092D9BC58A61C004084D3AAF8347D14E3'").getAll();
+};
+
+export const GetLibraryContentTypes = async (libraryTitle: string): Promise<string> => {
+    let library = await sp.web.lists.getByTitle(libraryTitle);
+    return (await library.contentTypes()).find((f: IContentTypeInfo) => f.Group === "Custom Content Types" && f.StringId.includes('0x0120')).StringId;
 };
 //#endregion
