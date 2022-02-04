@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
+import { sp } from "@pnp/sp";
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
@@ -10,6 +11,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import * as strings from 'NewMemberFormWebPartStrings';
 import NewMemberForm from './components/NewMemberForm';
 import { INewMemberFormProps } from './components/INewMemberFormProps';
+import { GetChoiceColumn } from '../../ClaringtonHelperMethods/MyHelperMethods';
 
 export interface INewMemberFormWebPartProps {
   description: string;
@@ -21,11 +23,26 @@ export default class NewMemberFormWebPart extends BaseClientSideWebPart<INewMemb
     const element: React.ReactElement<INewMemberFormProps> = React.createElement(
       NewMemberForm,
       {
-        description: this.properties.description
+        description: this.properties.description,
+        context: this.context
       }
     );
 
     ReactDom.render(element, this.domElement);
+  }
+
+  protected async onInit(): Promise<void> {
+    await super.onInit().then(() => {
+      sp.setup({
+        spfxContext: this.context,
+        sp: {
+          headers: {
+            "Accept": "application/json; odata=nometadata"
+          },
+          baseUrl: this.context.pageContext.web.absoluteUrl
+        }
+      });
+    });
   }
 
   protected onDispose(): void {
