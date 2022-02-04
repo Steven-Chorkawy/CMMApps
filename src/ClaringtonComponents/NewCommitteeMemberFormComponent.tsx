@@ -2,9 +2,11 @@ import * as React from 'react';
 
 import { Form, FormElement, Field, FormRenderProps, FieldArrayRenderProps, FieldArrayProps } from '@progress/kendo-react-form';
 import { FilePicker, IFilePickerResult } from '@pnp/spfx-controls-react/lib/FilePicker';
+import { FileTypeIcon, ApplicationType, IconType, ImageSize } from "@pnp/spfx-controls-react/lib/FileTypeIcon";
+
 
 import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker, Calendar, getTheme } from '@fluentui/react';
-import { ActionButton } from 'office-ui-fabric-react';
+import { ActionButton, IconButton } from 'office-ui-fabric-react';
 import { ListView, ListViewHeader, ListViewItemProps } from '@progress/kendo-react-listview';
 import { MyComboBox, MyDatePicker } from './MyFormComponents';
 import { CalculateTermEndDate, FORM_DATA_INDEX, GetChoiceColumn, GetCommitteeByName, OnFormatDate } from '../ClaringtonHelperMethods/MyHelperMethods';
@@ -33,7 +35,6 @@ export interface INewCommitteeMemberFormItemState {
     committeeFileItem?: ICommitteeFileItem;
     selectedStartDate?: Date;
     calculatedEndDate?: Date;
-    pendingFiles?: any;
 }
 
 export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitteeMemberFormItemState> {
@@ -43,8 +44,23 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
             positions: [],
             status: [],
             committeeFileItem: undefined,
-            pendingFiles: []
         };
+    }
+
+    private _pushFileAttachment = (filePickerResult: IFilePickerResult[]) => {
+        let currentFiles = this.props.formRenderProps.valueGetter(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Files`);
+        if (!currentFiles)
+            currentFiles = [];
+        currentFiles.push(...filePickerResult);
+        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Files`, { value: currentFiles });
+    }
+
+    private _popFileAttachment = (index: number) => {
+        let currentFiles = this.props.formRenderProps.valueGetter(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Files`);
+        if (!currentFiles)
+            return;
+        currentFiles.splice(index, 1);
+        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Files`, { value: currentFiles });
     }
 
     public render() {
@@ -111,43 +127,40 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
                 {
                     // MS is working on allowing users to select multiple files from a library. https://github.com/pnp/sp-dev-fx-controls-react/pull/1047                
                 }
-                <FilePicker
-                    // accepts={[".gif", ".jpg", ".jpeg", ".bmp", ".dib", ".tif", ".tiff", ".ico", ".png", ".jxr", ".svg"]}
-                    buttonIcon="FileImage"
+                <Field
+                    component={FilePicker}
+                    name={`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Files`}
+                    buttonIcon="Attach"
                     buttonLabel='Select Files'
                     label={'Upload Attachments'}
-                    onSave={(filePickerResult: IFilePickerResult[]) => {
-                        console.log('onSave');
-                        console.log(filePickerResult);
-                        let currentFiles = this.state.pendingFiles;
-                        currentFiles.push(...filePickerResult);
-                        this.setState({ pendingFiles: currentFiles });
-                        filePickerResult.map(fpr => {
-                            fpr.downloadFileContent().then(fileContent => {
-                                sp.web.getFolderByServerRelativeUrl('/sites/CMM/Shared%20Documents/Hello').files.add(fpr.fileName, fileContent, true);
-                            });
-                        })
-                    }}
-                    onChange={(filePickerResult: IFilePickerResult[]) => {
-                        console.log('onChange');
-                        console.log(filePickerResult);
-                    }}
                     context={this.props.context}
                     hideStockImages={true}
                     hideLinkUploadTab={true}
                     hideLocalUploadTab={true}
                     hideRecentTab={true}
+                    disabled={!this.state.committeeFileItem}
+                    onSave={(filePickerResult: IFilePickerResult[]) => this._pushFileAttachment(filePickerResult)}
                 />
-                {this.state.pendingFiles.map(f => { return <div><span>Name: {f.fileName}</span> | <span>Size: {f.fileSize}</span></div>; })}
 
-                {/* <Field
-                    name={`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Files`}
-                    batch={false}
-                    multiple={true}
-                    defaultFiles={[]}
+                <ul>
+                    {
+                        this.props.formRenderProps.valueGetter(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Files`)
+                            ?.map((f, index) => {
+                                return <li>
+                                    <span>{f.fileName}</span>
+                                    <IconButton
+                                        iconProps={{ iconName: 'Delete' }}
+                                        title={`Remove ${f.fileName}`}
+                                        ariaLabel="Delete"
+                                        onClick={e => {
+                                            this._popFileAttachment(index);
+                                        }}
+                                    />
+                                </li>;
+                            })
+                    }
+                </ul>
 
-                    component={Upload}
-                /> */}
             </div>
         );
     }
