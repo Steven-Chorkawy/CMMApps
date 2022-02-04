@@ -18,15 +18,12 @@ import { sp } from '@pnp/sp';
 export const NewCommitteeMemberContext = React.createContext<{
     parentField: string;
     activeCommittees: any[];
+    onRemove: Function;
 }>({} as any);
 
 export interface INewCommitteeMemberFormComponentProps extends FieldArrayProps {
     formRenderProps: FormRenderProps;
     context: WebPartContext;
-}
-
-export interface INewCommitteeMemberFormComponentState {
-    editIndex: number;
 }
 
 export interface INewCommitteeMemberFormItemState {
@@ -67,22 +64,33 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
         const reactTheme = getTheme();
         return (
             <div style={{ padding: '10px', marginBottom: '10px', boxShadow: reactTheme.effects.elevation16 }}>
-                <Field
-                    name={`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].CommitteeName`}
-                    label={`Select Committee`}
-                    component={MyComboBox}
-                    options={this.props.listViewContext.activeCommittees.map(value => { return { key: value.Title, text: value.Title }; })}
-                    description={this.state.committeeFileItem ? `Term Length: ${this.state.committeeFileItem.TermLength} years.` : ""}
-                    onChange={(e) => {
-                        GetChoiceColumn(e.value, 'Status').then(f => this.setState({ status: f }));
-                        GetChoiceColumn(e.value, 'Position').then(f => this.setState({ positions: f }));
-                        GetCommitteeByName(e.value).then(f => this.setState({ committeeFileItem: f }));
-                        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._EndDate`, { value: '' });
-                        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].StartDate`, { value: '' });
-                        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._Status`, { value: '' });
-                        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Position`, { value: '' });
-                    }}
-                />
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <Field
+                        name={`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].CommitteeName`}
+                        label={`Select Committee`}
+                        component={MyComboBox}
+                        options={this.props.listViewContext.activeCommittees.map(value => { return { key: value.Title, text: value.Title }; })}
+                        description={this.state.committeeFileItem ? `Term Length: ${this.state.committeeFileItem.TermLength} years.` : ""}
+                        onChange={(e) => {
+                            GetChoiceColumn(e.value, 'Status').then(f => this.setState({ status: f }));
+                            GetChoiceColumn(e.value, 'Position').then(f => this.setState({ positions: f }));
+                            GetCommitteeByName(e.value).then(f => this.setState({ committeeFileItem: f }));
+                            this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._EndDate`, { value: '' });
+                            this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].StartDate`, { value: '' });
+                            this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._Status`, { value: '' });
+                            this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Position`, { value: '' });
+                        }}
+                    />
+                    <ActionButton
+                        iconProps={{ iconName: "Delete" }}
+                        onClick={e => {
+                            this.props.listViewContext.onRemove(this.props.dataItem);
+                            this.props.formRenderProps.onChange('Committees', { value: this.props.formRenderProps.valueGetter('Committees') });
+                        }}>
+                        Remove Committee
+                    </ActionButton>
+                </div>
+
                 <Field
                     name={`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._Status`}
                     label={'Status'}
@@ -90,7 +98,6 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
                     disabled={!this.state.committeeFileItem}
                     options={this.state.status ? this.state.status.map(f => { return { key: f, text: f }; }) : []}
                 />
-
                 <Field
                     name={`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Position`}
                     label={'Position'}
@@ -166,12 +173,12 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
     }
 }
 
-export class NewCommitteeMemberFormComponent extends React.Component<INewCommitteeMemberFormComponentProps, INewCommitteeMemberFormComponentState> {
+export class NewCommitteeMemberFormComponent extends React.Component<INewCommitteeMemberFormComponentProps, any> {
     constructor(props) {
         super(props);
 
         this.state = {
-            editIndex: 0,
+
         };
     }
 
@@ -187,7 +194,12 @@ export class NewCommitteeMemberFormComponent extends React.Component<INewCommitt
                 Position: ''
             },
         });
-        this.setState({ editIndex: 0 });
+    }
+
+    private onRemove = (dataItem: any) => {
+        this.props.onRemove({
+            index: dataItem[FORM_DATA_INDEX],
+        });
     }
 
     private MyFooter = () => {
@@ -214,6 +226,7 @@ export class NewCommitteeMemberFormComponent extends React.Component<INewCommitt
             <NewCommitteeMemberContext.Provider value={{
                 parentField: name,
                 activeCommittees: this.props.activeCommittees,
+                onRemove: this.onRemove
             }}>
                 <ListView
                     item={this.NewCommitteeMemberFormItem}

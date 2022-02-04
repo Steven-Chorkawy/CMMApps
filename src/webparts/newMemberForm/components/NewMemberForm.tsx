@@ -84,7 +84,7 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
             {
               this.state.activeCommittees.length > 0 &&
               <FieldArray
-                name={'TestList'}
+                name={'Committees'}
                 component={NewCommitteeMemberFormComponent}
                 context={this.props.context}
                 activeCommittees={this.state.activeCommittees}

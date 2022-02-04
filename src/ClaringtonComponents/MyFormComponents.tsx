@@ -15,7 +15,7 @@ export const MyComboBox = (fieldRenderProps) => {
   } = fieldRenderProps;
 
 
-  return <div>
+  return <div key={`${label}-${value}`}>
     <ComboBox
       label={label}
       options={options}
@@ -26,6 +26,7 @@ export const MyComboBox = (fieldRenderProps) => {
       }}
       disabled={disabled}
       required={required}
+      defaultSelectedKey={value}
     />
     <span>{description}</span>
   </div>;
