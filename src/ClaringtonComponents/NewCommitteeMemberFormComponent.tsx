@@ -80,6 +80,8 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
                             this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._Status`, { value: '' });
                             this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Position`, { value: '' });
                         }}
+                        required={true}
+                        validator={value => value ? "" : "Please Select a Committee."}
                     />
                     <ActionButton
                         iconProps={{ iconName: "Delete" }}
@@ -120,6 +122,8 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
                         this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._EndDate`, { value: calcEndDate });
                     }}
                     disabled={!this.state.committeeFileItem}
+                    required={true}
+                    validator={value => value ? "" : "Please Select a Stat Date."}
                 />
                 {
                     this.state.calculatedEndDate &&

@@ -87,6 +87,7 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
       const { validationMessage, visited, ...others } = fieldRenderProps;
       return <TextField {...others} errorMessage={visited && validationMessage && validationMessage} />;
     };
+      
     const reactTheme = getTheme();
 
     return (<div style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '900px' }}>
@@ -166,10 +167,18 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
               </MessageBar>
             }
             <div style={{ marginTop: "10px" }}>
-              <PrimaryButton text='Submit' type="submit" style={{ margin: '5px' }} disabled={!formRenderProps.allowSubmit} />
-              <DefaultButton text='Clear' style={{ margin: '5px' }}
+              <PrimaryButton
+                text='Submit'
+                type="submit"
+                style={{ margin: '5px' }}
+                disabled={(this.state.saveStatus === NewMemberFormSaveStatus.Success || this.state.saveStatus === NewMemberFormSaveStatus.Error)}
+              />
+              <DefaultButton
+                text='Clear'
+                style={{ margin: '5px' }}
                 onClick={e => {
-                  formRenderProps.onFormReset(); this.setState({ saveStatus: NewMemberFormSaveStatus.NewForm });
+                  formRenderProps.onFormReset();
+                  this.setState({ saveStatus: NewMemberFormSaveStatus.NewForm, linkToCommitteeDocSet: [] });
                 }}
               />
             </div>

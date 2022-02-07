@@ -38,6 +38,8 @@ export const MyDatePicker = fieldRenderProps => {
       {...fieldRenderProps}
       onSelectDate={e => fieldRenderProps.onChange({ value: e })}
     />
+    {fieldRenderProps.visited && fieldRenderProps.validationMessage && <span>{fieldRenderProps.validationMessage}</span>}
+
   </div>;
 };
 
