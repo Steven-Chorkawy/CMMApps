@@ -97,9 +97,6 @@ export const CreateNewMember = async (member: IMemberListItem): Promise<IItemAdd
  * TODO: What type should the committee param be?
  */
 export const CreateNewCommitteeMember = async (memberId: number, committee: any): Promise<any> => {
-    console.log('CreteNewCommitteeMember');
-    console.log(committee);
-
     let member = await sp.web.lists.getByTitle(MyLists.Members).items.getById(memberId).get();
     const PATH_TO_DOC_SET = await FormatDocumentSetPath(committee.CommitteeName, member.Title);
 
@@ -177,7 +174,7 @@ export const CreateCommitteeMemberHistoryItem = async (committeeMemberHistoryIte
 
     let committeeMemberContactInfoRetention = await CalculateMemberInfoRetention(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId);
     debugger;
-    sp.web.lists.getByTitle(MyLists.Members).items.getById(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId).update({
+    await sp.web.lists.getByTitle(MyLists.Members).items.getById(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId).update({
         RetentionDate: committeeMemberContactInfoRetention.date,
         RetentionDateCommittee: committeeMemberContactInfoRetention.committee
     });
