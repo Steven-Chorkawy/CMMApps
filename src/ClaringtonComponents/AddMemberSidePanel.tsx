@@ -1,7 +1,9 @@
 import { Panel, PanelType } from '@fluentui/react';
+import { Dropdown, Separator } from 'office-ui-fabric-react';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import AddCommitteeMemberForm from './AddCommitteeMemberForm';
+import NewMemberForm from './NewMemberForm';
 
 
 
@@ -16,7 +18,8 @@ export default class AddMemberSidePanel extends React.Component<IAddMemberSidePa
         super(props);
 
         this.state = {
-            isOpen: this.props.isOpen
+            isOpen: this.props.isOpen,
+            selectedForm: undefined
         };
     }
 
@@ -31,7 +34,20 @@ export default class AddMemberSidePanel extends React.Component<IAddMemberSidePa
                 customWidth={'800px'}
             >
                 <div ref={e => wrapper = e}>
-                    <AddCommitteeMemberForm context={this.props.context} description={'???'} />
+                    <Dropdown
+                        label="Add New or Existing Member"
+                        options={[{ key: "Add New Member", text: "Add New Member" }, { key: "Add Existing Member", text: "Add Existing Member" }]}
+                        onChange={(event, options) => {
+                            console.log(options);
+                            this.setState({ selectedForm: options.key });
+                        }}
+                    />
+                    <Separator />
+                    {
+                        this.state.selectedForm === "Add New Member" ?
+                            <NewMemberForm context={this.props.context} description='???' /> :
+                            <AddCommitteeMemberForm context={this.props.context} description={'???'} />
+                    }
                 </div>
             </Panel >
         );

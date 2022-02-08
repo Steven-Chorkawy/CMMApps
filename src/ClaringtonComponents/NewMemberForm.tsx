@@ -90,12 +90,23 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
       const { validationMessage, visited, ...others } = fieldRenderProps;
       return <TextField {...others} errorMessage={visited && validationMessage && validationMessage} />;
     };
-      
+
     const reactTheme = getTheme();
+
+    const initialValues = this.props?.context?.pageContext?.list?.title ? {
+      Committees: [{
+        CommitteeName: this.props.context?.pageContext.list.title,
+        Position: undefined,
+        StartDate: undefined,
+        _EndDate: undefined,
+        _Status: undefined
+      }]
+    } : undefined;
 
     return (<div style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '900px' }}>
       <Form
         onSubmit={this._onSubmit}
+        initialValues={initialValues}
         render={(formRenderProps) => (
           <FormElement>
             <h2>Add New Member</h2>
