@@ -96,7 +96,7 @@ export const CreateNewMember = async (member: IMemberListItem): Promise<IItemAdd
  * @param committee Committee to add member to.
  * TODO: What type should the committee param be?
  */
-export const CreateNewCommitteeMember = async (memberId: number, committee: any): Promise<any> => {
+export const CreateNewCommitteeMember = async (memberId: number, committee: any): Promise<void> => {
     let member = await sp.web.lists.getByTitle(MyLists.Members).items.getById(memberId).get();
     const PATH_TO_DOC_SET = await FormatDocumentSetPath(committee.CommitteeName, member.Title);
 
@@ -137,7 +137,6 @@ export const CreateNewCommitteeMember = async (memberId: number, committee: any)
         MemberID: memberId.toString(),
         Title: `${member.FirstName} ${member.LastName}`
     });
-
 };
 
 export const CreateDocumentSet = async (input): Promise<IItemUpdateResult> => {
@@ -220,8 +219,20 @@ export const GetListOfActiveCommittees = async (): Promise<any> => {
     return await sp.web.lists.getByTitle(MyLists.CommitteeFiles).items.filter("OData__Status eq 'Active' and ContentTypeId eq '0x0120D52000BD403A8C219D9A40B835B291EFC822540092D9BC58A61C004084D3AAF8347D14E3'").getAll();
 };
 
+
 export const GetLibraryContentTypes = async (libraryTitle: string): Promise<string> => {
     let library = await sp.web.lists.getByTitle(libraryTitle);
     return (await library.contentTypes()).find((f: IContentTypeInfo) => f.Group === "Custom Content Types" && f.StringId.includes('0x0120')).StringId;
+};
+
+export const GetMembers = async (): Promise<IMemberListItem[]> => await sp.web.lists.getByTitle(MyLists.Members).items.getAll();
+
+
+/**
+ * TODO: Finish this method. 
+ * @returns A list of Committees a member has sat on. 
+ */
+export const GetMembersCommittees = async (): Promise<any> => {
+    return;
 };
 //#endregion
