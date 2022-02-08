@@ -52,11 +52,11 @@ export default class AddMemberCommandSetCommandSet extends BaseListViewCommandSe
 
   @override
   public onListViewUpdated(event: IListViewCommandSetListViewUpdatedParameters): void {
-    // [const compareOneCommand: Command = this.tryGetCommand('COMMAND_ADD_MEMBER');
-    // if (compareOneCommand) {
-    //   // This command should be hidden unless exactly one row is selected.
-    //   compareOneCommand.visible = event.selectedRows.length === 1;
-    // }]
+    const compareRenewCommand: Command = this.tryGetCommand('COMMAND_RENEW_MEMBER');
+    if (compareRenewCommand) {
+      // This command should be hidden unless exactly one row is selected.
+      compareRenewCommand.visible = event.selectedRows.length === 1;
+    }
   }
 
   @override
@@ -69,6 +69,9 @@ export default class AddMemberCommandSetCommandSet extends BaseListViewCommandSe
           context: this.context,
         });
         ReactDOM.render(element, div);
+        break;
+      case 'COMMAND_RENEW_MEMBER':
+        alert('RENEW MEMBER CLICKED!');
         break;
       default:
         throw new Error('Unknown command');
