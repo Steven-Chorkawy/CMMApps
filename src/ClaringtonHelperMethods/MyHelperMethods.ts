@@ -97,5 +97,5 @@ export const GetMembers = async (): Promise<IMemberListItem[]> => await sp.web.l
  */
 export const GetMembersCommittees = async (): Promise<any> => {
     return;
-}
+};
 //#endregion

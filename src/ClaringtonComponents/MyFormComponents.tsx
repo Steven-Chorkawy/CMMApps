@@ -11,7 +11,9 @@ export const MyComboBox = (fieldRenderProps) => {
     required,
     description,
     onChange,
-    disabled
+    disabled,
+    visited, 
+    validationMessage
   } = fieldRenderProps;
 
 
@@ -27,6 +29,7 @@ export const MyComboBox = (fieldRenderProps) => {
       disabled={disabled}
       required={required}
       defaultSelectedKey={value}
+      errorMessage={(visited && validationMessage) ? validationMessage : ""}
     />
     <span>{description}</span>
   </div>;
