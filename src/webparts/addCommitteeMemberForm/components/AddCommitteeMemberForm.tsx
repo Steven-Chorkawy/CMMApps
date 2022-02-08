@@ -25,8 +25,6 @@ export default class AddCommitteeMemberForm extends React.Component<IAddCommitte
       activeCommittees: []
     };
 
-    alert(this.props?.context?.pageContext.list.title);
-
     GetListOfActiveCommittees().then(value => {
       this.setState({ activeCommittees: value });
     });
