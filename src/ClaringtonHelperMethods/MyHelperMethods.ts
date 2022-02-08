@@ -220,8 +220,19 @@ export const GetListOfActiveCommittees = async (): Promise<any> => {
     return await sp.web.lists.getByTitle(MyLists.CommitteeFiles).items.filter("OData__Status eq 'Active' and ContentTypeId eq '0x0120D52000BD403A8C219D9A40B835B291EFC822540092D9BC58A61C004084D3AAF8347D14E3'").getAll();
 };
 
+
 export const GetLibraryContentTypes = async (libraryTitle: string): Promise<string> => {
     let library = await sp.web.lists.getByTitle(libraryTitle);
     return (await library.contentTypes()).find((f: IContentTypeInfo) => f.Group === "Custom Content Types" && f.StringId.includes('0x0120')).StringId;
+}
+export const GetMembers = async (): Promise<IMemberListItem[]> => await sp.web.lists.getByTitle(MyLists.Members).items.getAll();
+
+
+/**
+ * TODO: Finish this method. 
+ * @returns A list of Committees a member has sat on. 
+ */
+export const GetMembersCommittees = async (): Promise<any> => {
+    return;
 };
 //#endregion

@@ -10,6 +10,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import * as strings from 'AddCommitteeMemberFormWebPartStrings';
 import AddCommitteeMemberForm from './components/AddCommitteeMemberForm';
 import { IAddCommitteeMemberFormProps } from './components/IAddCommitteeMemberFormProps';
+import { sp } from '@pnp/sp';
 
 export interface IAddCommitteeMemberFormWebPartProps {
   description: string;
@@ -26,6 +27,20 @@ export default class AddCommitteeMemberFormWebPart extends BaseClientSideWebPart
     );
 
     ReactDom.render(element, this.domElement);
+  }
+
+  protected async onInit(): Promise<void> {
+    await super.onInit().then(() => {
+      sp.setup({
+        spfxContext: this.context,
+        sp: {
+          headers: {
+            "Accept": "application/json; odata=nometadata"
+          },
+          baseUrl: this.context.pageContext.web.absoluteUrl
+        }
+      });
+    });
   }
 
   protected onDispose(): void {
