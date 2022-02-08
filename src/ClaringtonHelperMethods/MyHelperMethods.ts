@@ -224,7 +224,8 @@ export const GetListOfActiveCommittees = async (): Promise<any> => {
 export const GetLibraryContentTypes = async (libraryTitle: string): Promise<string> => {
     let library = await sp.web.lists.getByTitle(libraryTitle);
     return (await library.contentTypes()).find((f: IContentTypeInfo) => f.Group === "Custom Content Types" && f.StringId.includes('0x0120')).StringId;
-}
+};
+
 export const GetMembers = async (): Promise<IMemberListItem[]> => await sp.web.lists.getByTitle(MyLists.Members).items.getAll();
 
 
