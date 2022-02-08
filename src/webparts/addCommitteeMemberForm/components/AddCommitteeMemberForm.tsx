@@ -4,7 +4,7 @@ import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, Dat
 import { Form, FormElement, Field, FieldArray, FieldArrayProps } from '@progress/kendo-react-form';
 import { SelectMember } from '../../../ClaringtonComponents/SelectMember';
 import { NewCommitteeMemberFormComponent } from '../../../ClaringtonComponents/NewCommitteeMemberFormComponent';
-import { GetListOfActiveCommittees } from '../../../ClaringtonHelperMethods/MyHelperMethods';
+import { CreateNewCommitteeMember, GetListOfActiveCommittees } from '../../../ClaringtonHelperMethods/MyHelperMethods';
 
 
 export interface IAddCommitteeMemberFormState {
@@ -24,11 +24,22 @@ export default class AddCommitteeMemberForm extends React.Component<IAddCommitte
     });
   }
 
+
+  private _onSubmit = async (values) => {
+    if (values.Committees && values.Member) {
+      for (let committeeIndex = 0; committeeIndex < values.Committees.length; committeeIndex++) {
+        await CreateNewCommitteeMember(values.Member.ID, values.Committees[committeeIndex]);
+      }
+
+      alert('Done!');
+    }
+  }
+
   public render(): React.ReactElement<IAddCommitteeMemberFormProps> {
 
     return (<div>
       <Form
-        onSubmit={e => { console.log(e); }}
+        onSubmit={this._onSubmit}
         initialValues={{
           Committees: [{
             CommitteeName: undefined,

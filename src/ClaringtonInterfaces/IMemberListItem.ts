@@ -1,4 +1,6 @@
 export default interface IMemberListItem {
+    Id?: number;
+    ID?: number;
     Title: string;
     FirstName: string;      // ! Required.
     MiddleName?: string;

@@ -96,7 +96,7 @@ export const CreateNewMember = async (member: IMemberListItem): Promise<IItemAdd
  * @param committee Committee to add member to.
  * TODO: What type should the committee param be?
  */
-export const CreateNewCommitteeMember = async (memberId: number, committee: any): Promise<any> => {
+export const CreateNewCommitteeMember = async (memberId: number, committee: any): Promise<void> => {
     let member = await sp.web.lists.getByTitle(MyLists.Members).items.getById(memberId).get();
     const PATH_TO_DOC_SET = await FormatDocumentSetPath(committee.CommitteeName, member.Title);
 
@@ -137,7 +137,6 @@ export const CreateNewCommitteeMember = async (memberId: number, committee: any)
         MemberID: memberId.toString(),
         Title: `${member.FirstName} ${member.LastName}`
     });
-
 };
 
 export const CreateDocumentSet = async (input): Promise<IItemUpdateResult> => {
