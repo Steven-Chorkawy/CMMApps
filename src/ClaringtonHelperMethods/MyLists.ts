@@ -1,5 +1,5 @@
 export enum MyLists {
     Members = "Members",
-    CommitteeMemberHistory = "CommitteeMemberHistory",
+    CommitteeMemberHistory = "Committee Member History",
     CommitteeFiles = "CommitteeFiles"
 }

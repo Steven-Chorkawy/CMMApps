@@ -11,7 +11,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import * as strings from 'NewMemberFormWebPartStrings';
 import NewMemberForm from './components/NewMemberForm';
 import { INewMemberFormProps } from './components/INewMemberFormProps';
-import { GetChoiceColumn } from '../../ClaringtonHelperMethods/MyHelperMethods';
+import { CalculateMemberInfoRetention, GetChoiceColumn } from '../../ClaringtonHelperMethods/MyHelperMethods';
 
 export interface INewMemberFormWebPartProps {
   description: string;
@@ -20,6 +20,8 @@ export interface INewMemberFormWebPartProps {
 export default class NewMemberFormWebPart extends BaseClientSideWebPart<INewMemberFormWebPartProps> {
 
   public render(): void {
+    CalculateMemberInfoRetention(47);
+
     const element: React.ReactElement<INewMemberFormProps> = React.createElement(
       NewMemberForm,
       {
