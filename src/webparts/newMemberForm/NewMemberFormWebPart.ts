@@ -9,8 +9,7 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'NewMemberFormWebPartStrings';
-import NewMemberForm from './components/NewMemberForm';
-import { INewMemberFormProps } from './components/INewMemberFormProps';
+import NewMemberForm, { INewMemberFormProps } from '../../ClaringtonComponents/NewMemberForm';
 import { CalculateMemberInfoRetention, GetChoiceColumn } from '../../ClaringtonHelperMethods/MyHelperMethods';
 
 export interface INewMemberFormWebPartProps {

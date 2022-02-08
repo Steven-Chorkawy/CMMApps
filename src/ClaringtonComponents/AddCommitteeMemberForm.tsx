@@ -65,6 +65,9 @@ export default class AddCommitteeMemberForm extends React.Component<IAddCommitte
               require={true}
               component={SelectMember}
             />
+            <div>
+              <a target='_blank' href='/sites/CMM/SitePages/Add-New-Member.aspx'>Click here to add new member.</a>
+            </div>
 
             {
               this.state.activeCommittees.length > 0 &&

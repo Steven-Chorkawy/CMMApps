@@ -3,12 +3,12 @@ import * as ReactDOM from "react-dom";
 
 import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker, getTheme, ProgressIndicator, MessageBar, MessageBarType, Separator, Link } from '@fluentui/react';
 
-import { INewMemberFormProps } from './INewMemberFormProps';
-import { CreateNewCommitteeMember, CreateNewMember, FormatDocumentSetPath, GetChoiceColumn, GetListOfActiveCommittees, OnFormatDate } from '../../../ClaringtonHelperMethods/MyHelperMethods';
-import { NewCommitteeMemberFormComponent } from '../../../ClaringtonComponents/NewCommitteeMemberFormComponent';
-import { MyComboBox, PhoneInput, PostalCodeInput } from '../../../ClaringtonComponents/MyFormComponents';
+import { CreateNewCommitteeMember, CreateNewMember, FormatDocumentSetPath, GetChoiceColumn, GetListOfActiveCommittees, OnFormatDate } from '../ClaringtonHelperMethods/MyHelperMethods';
+import { NewCommitteeMemberFormComponent } from './NewCommitteeMemberFormComponent';
+import { MyComboBox, PhoneInput, PostalCodeInput } from './MyFormComponents';
 
 import { Form, FormElement, Field, FieldArray, FieldArrayProps } from '@progress/kendo-react-form';
+import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 export enum NewMemberFormSaveStatus {
   NewForm = -1,
@@ -16,6 +16,11 @@ export enum NewMemberFormSaveStatus {
   AddingMemberToCommittee = 1,
   Success = 2,
   Error = 3
+}
+
+export interface INewMemberFormProps {
+  description: string;
+  context: WebPartContext;
 }
 
 export interface INewMemberFormState {
