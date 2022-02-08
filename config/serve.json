@@ -25,6 +25,18 @@
           }
         }
       }
+    },
+    "addMemberCommandSet": {
+      "pageUrl": "https://contoso.sharepoint.com/sites/mySite/SitePages/myPage.aspx",
+      "customActions": {
+        "f406a3c9-a906-4836-8969-85cd8a6f6307": {
+          "location": "ClientSideExtension.ListViewCommandSet.CommandBar",
+          "properties": {
+            "sampleTextOne": "One item is selected in the list",
+            "sampleTextTwo": "This command is always visible."
+          }
+        }
+      }
     }
   }
 }

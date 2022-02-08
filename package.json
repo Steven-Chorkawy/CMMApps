@@ -37,7 +37,8 @@
     "@progress/kendo-react-treeview": "^5.0.1",
     "office-ui-fabric-react": "7.174.1",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-dom": "16.13.1",
+    "@microsoft/sp-dialog": "1.13.1"
   },
   "devDependencies": {
     "@types/react": "16.9.51",
