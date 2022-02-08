@@ -1,15 +1,21 @@
 import * as React from 'react';
-import { IAddCommitteeMemberFormProps } from './IAddCommitteeMemberFormProps';
 import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker, getTheme, Separator } from '@fluentui/react';
 import { Form, FormElement, Field, FieldArray, FieldArrayProps } from '@progress/kendo-react-form';
 import { SelectMember } from '../../../ClaringtonComponents/SelectMember';
 import { NewCommitteeMemberFormComponent } from '../../../ClaringtonComponents/NewCommitteeMemberFormComponent';
 import { CreateNewCommitteeMember, GetListOfActiveCommittees } from '../../../ClaringtonHelperMethods/MyHelperMethods';
+import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 
 export interface IAddCommitteeMemberFormState {
   activeCommittees: [];
 }
+
+export interface IAddCommitteeMemberFormProps {
+  description: string;
+  context: WebPartContext;
+}
+
 
 export default class AddCommitteeMemberForm extends React.Component<IAddCommitteeMemberFormProps, IAddCommitteeMemberFormState> {
 
@@ -18,6 +24,8 @@ export default class AddCommitteeMemberForm extends React.Component<IAddCommitte
     this.state = {
       activeCommittees: []
     };
+
+    alert(this.props?.context?.pageContext.list.title);
 
     GetListOfActiveCommittees().then(value => {
       this.setState({ activeCommittees: value });
@@ -42,7 +50,7 @@ export default class AddCommitteeMemberForm extends React.Component<IAddCommitte
         onSubmit={this._onSubmit}
         initialValues={{
           Committees: [{
-            CommitteeName: undefined,
+            CommitteeName: this.props?.context?.pageContext.list.title ? this.props.context?.pageContext.list.title : undefined,
             Position: undefined,
             StartDate: undefined,
             _EndDate: undefined,

@@ -49,8 +49,6 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
       this.setState({ saveStatus: NewMemberFormSaveStatus.CreatingNewMember });
       // Step 1: Create a new Member List Item.
       let newMemberItemAddResult = await CreateNewMember(values.Member);
-      console.log('ewMemberItemAddResult');
-      console.log(newMemberItemAddResult);
 
       // Step 2: Add the new member to committees if any are provided. 
       if (values.Committees) {

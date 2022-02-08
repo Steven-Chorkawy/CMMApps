@@ -18,7 +18,6 @@ import { IContentTypeInfo } from "@pnp/sp/content-types";
 import { IFolderAddResult } from "@pnp/sp/folders";
 import { ICommitteeMemberHistoryListItem } from "../ClaringtonInterfaces/ICommitteeMemberHistoryListItem";
 
-
 //#region Constants
 export const FORM_DATA_INDEX = "formDataIndex";
 //#endregion
@@ -83,7 +82,6 @@ export const CalculateMemberInfoRetention = async (memberId: number): Promise<{ 
 
 //#region Create
 export const CreateNewMember = async (member: IMemberListItem): Promise<IItemAddResult> => {
-    console.log('CreateNewMember');
     member.Title = `${member.FirstName}, ${member.LastName}`;
     // add an item to the list
     let iar = await sp.web.lists.getByTitle(MyLists.Members).items.add(member);
@@ -97,13 +95,15 @@ export const CreateNewMember = async (member: IMemberListItem): Promise<IItemAdd
  * TODO: What type should the committee param be?
  */
 export const CreateNewCommitteeMember = async (memberId: number, committee: any): Promise<void> => {
+    if (!committee) {
+        throw "No Committee provided.";
+    }
+
     let member = await sp.web.lists.getByTitle(MyLists.Members).items.getById(memberId).get();
     const PATH_TO_DOC_SET = await FormatDocumentSetPath(committee.CommitteeName, member.Title);
 
     // Step 1: Create the document set.
     let docSet = await (await CreateDocumentSet({ LibraryTitle: committee.CommitteeName, Title: member.Title })).item.get();
-    console.log('doc set');
-    console.log(docSet);
 
     // Step 2: Update Metadata.
     sp.web.lists.getByTitle(committee.CommitteeName).items.getById(docSet.ID).update({

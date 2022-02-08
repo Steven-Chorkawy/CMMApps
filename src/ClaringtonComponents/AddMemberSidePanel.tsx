@@ -1,6 +1,7 @@
 import { Panel, PanelType } from '@fluentui/react';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import AddCommitteeMemberForm from '../webparts/addCommitteeMemberForm/components/AddCommitteeMemberForm';
 
 
 
@@ -30,7 +31,7 @@ export default class AddMemberSidePanel extends React.Component<IAddMemberSidePa
                 customWidth={'800px'}
             >
                 <div ref={e => wrapper = e}>
-                    <h1>hello world</h1>
+                    <AddCommitteeMemberForm context={this.props.context} description={'???'} />
                 </div>
             </Panel >
         );

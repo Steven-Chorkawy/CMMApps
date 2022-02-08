@@ -15,10 +15,6 @@ export default class CommitteeMemberLookUp extends React.Component<any, ICommitt
     super(props);
 
     this.state = { isPanelOpen: false };
-
-    console.log('CommitteeMemberLookUp ctor');
-    console.log(props);
-    console.log(this.state);
   }
 
   @override
@@ -33,10 +29,6 @@ export default class CommitteeMemberLookUp extends React.Component<any, ICommitt
 
   @override
   public render(): React.ReactElement<{}> {
-    console.log('CommitteeMemberLookUp Render');
-    console.log(this.props);
-    console.log(this.state);
-
     return (
       <div>
         {
