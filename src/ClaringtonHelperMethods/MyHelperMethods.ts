@@ -89,4 +89,13 @@ export const GetListOfActiveCommittees = async (): Promise<any> => {
 };
 
 export const GetMembers = async (): Promise<IMemberListItem[]> => await sp.web.lists.getByTitle(MyLists.Members).items.getAll();
+
+
+/**
+ * TODO: Finish this method. 
+ * @returns A list of Committees a member has sat on. 
+ */
+export const GetMembersCommittees = async (): Promise<any> => {
+    return;
+}
 //#endregion

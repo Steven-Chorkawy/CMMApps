@@ -13,7 +13,7 @@ export default class AddCommitteeMemberForm extends React.Component<IAddCommitte
         onSubmit={e => { console.log(e); }}
         render={formRenderProps => (
           <FormElement>
-            <h2>Add Member to Committee</h2>
+            <h2 style={{ margin: '0' }}>Add Member to Committee</h2>
             <Separator />
             <Field
               name={'Member'}
@@ -21,11 +21,11 @@ export default class AddCommitteeMemberForm extends React.Component<IAddCommitte
               require={true}
               component={SelectMember}
             />
-            {/* {formRenderProps.valueGetter('Member')} */}
 
           </FormElement>
-        )}
+        )
+        }
       />
-    </div>);
+    </div >);
   }
 }
