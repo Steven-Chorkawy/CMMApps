@@ -11,7 +11,9 @@ export const MyComboBox = (fieldRenderProps) => {
     required,
     description,
     onChange,
-    disabled
+    disabled,
+    validationMessage,
+    visited
   } = fieldRenderProps;
 
 
@@ -27,6 +29,7 @@ export const MyComboBox = (fieldRenderProps) => {
       disabled={disabled}
       required={required}
       defaultSelectedKey={value}
+      errorMessage={(visited && validationMessage) ? validationMessage : ""}
     />
     <span>{description}</span>
   </div>;
@@ -37,8 +40,16 @@ export const MyDatePicker = fieldRenderProps => {
     <DatePicker
       {...fieldRenderProps}
       onSelectDate={e => fieldRenderProps.onChange({ value: e })}
+      isRequired={fieldRenderProps.required && fieldRenderProps.visited && fieldRenderProps.validationMessage}
     />
-    {fieldRenderProps.visited && fieldRenderProps.validationMessage && <span>{fieldRenderProps.validationMessage}</span>}
+    {
+      fieldRenderProps.visited && fieldRenderProps.validationMessage &&
+      <div role="alert">
+        <p className="ms-TextField-errorMessage errorMessage-259">
+          <span data-automation-id="error-message">{fieldRenderProps.validationMessage}</span>
+        </p>
+      </div>
+    }
 
   </div>;
 };
