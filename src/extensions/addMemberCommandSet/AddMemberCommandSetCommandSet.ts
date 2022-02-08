@@ -33,21 +33,18 @@ export default class AddMemberCommandSetCommandSet extends BaseListViewCommandSe
 
   @override
   public onListViewUpdated(event: IListViewCommandSetListViewUpdatedParameters): void {
-    const compareOneCommand: Command = this.tryGetCommand('COMMAND_1');
-    if (compareOneCommand) {
-      // This command should be hidden unless exactly one row is selected.
-      compareOneCommand.visible = event.selectedRows.length === 1;
-    }
+    // [const compareOneCommand: Command = this.tryGetCommand('COMMAND_ADD_MEMBER');
+    // if (compareOneCommand) {
+    //   // This command should be hidden unless exactly one row is selected.
+    //   compareOneCommand.visible = event.selectedRows.length === 1;
+    // }]
   }
 
   @override
   public onExecute(event: IListViewCommandSetExecuteEventParameters): void {
     switch (event.itemId) {
-      case 'COMMAND_1':
-        Dialog.alert(`${this.properties.sampleTextOne}`);
-        break;
-      case 'COMMAND_2':
-        Dialog.alert(`${this.properties.sampleTextTwo}`);
+      case 'COMMAND_ADD_MEMBER':
+        Dialog.alert(`HELL WORLD! ${this.properties.sampleTextOne}`);
         break;
       default:
         throw new Error('Unknown command');
