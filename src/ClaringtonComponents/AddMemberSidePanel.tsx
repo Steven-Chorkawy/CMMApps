@@ -1,7 +1,7 @@
 import { Panel, PanelType } from '@fluentui/react';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import AddCommitteeMemberForm from '../webparts/addCommitteeMemberForm/components/AddCommitteeMemberForm';
+import AddCommitteeMemberForm from './AddCommitteeMemberForm';
 
 
 

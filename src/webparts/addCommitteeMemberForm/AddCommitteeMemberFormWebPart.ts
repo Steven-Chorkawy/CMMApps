@@ -8,7 +8,7 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'AddCommitteeMemberFormWebPartStrings';
-import AddCommitteeMemberForm, { IAddCommitteeMemberFormProps } from './components/AddCommitteeMemberForm';
+import AddCommitteeMemberForm, { IAddCommitteeMemberFormProps } from '../../ClaringtonComponents/AddCommitteeMemberForm';
 import { sp } from '@pnp/sp';
 
 export interface IAddCommitteeMemberFormWebPartProps {

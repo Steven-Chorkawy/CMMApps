@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker, getTheme, Separator } from '@fluentui/react';
 import { Form, FormElement, Field, FieldArray, FieldArrayProps } from '@progress/kendo-react-form';
-import { SelectMember } from '../../../ClaringtonComponents/SelectMember';
-import { NewCommitteeMemberFormComponent } from '../../../ClaringtonComponents/NewCommitteeMemberFormComponent';
-import { CreateNewCommitteeMember, GetListOfActiveCommittees } from '../../../ClaringtonHelperMethods/MyHelperMethods';
+import { SelectMember } from './SelectMember';
+import { NewCommitteeMemberFormComponent } from './NewCommitteeMemberFormComponent';
+import { CreateNewCommitteeMember, GetListOfActiveCommittees } from '../ClaringtonHelperMethods/MyHelperMethods';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 
