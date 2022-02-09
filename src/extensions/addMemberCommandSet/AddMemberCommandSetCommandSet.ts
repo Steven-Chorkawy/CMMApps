@@ -69,10 +69,6 @@ export default class AddMemberCommandSetCommandSet extends BaseListViewCommandSe
     const div = document.createElement('div');
     console.log('onExecute');
     console.log(event);
-    if (event.selectedRows && event.selectedRows.length > 0) {
-      console.log(event.selectedRows[0].getValueByName('Title'));
-      console.log(event.selectedRows[0].getValueByName('SPFX_CommitteeMemberDisplayName'));
-    }
 
     switch (event.itemId) {
       case 'COMMAND_ADD_MEMBER':
