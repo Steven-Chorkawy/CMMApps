@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 
 import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker, getTheme, ProgressIndicator, MessageBar, MessageBarType, Separator, Link } from '@fluentui/react';
 
-import { CreateNewCommitteeMember, CreateNewMember, FormatDocumentSetPath, GetChoiceColumn, GetListOfActiveCommittees, OnFormatDate } from '../ClaringtonHelperMethods/MyHelperMethods';
+import { CreateNewCommitteeMember, CreateNewMember, FormatDocumentSetPath, GetChoiceColumn, GetListOfActiveCommittees, OnFormatDate, RenewCommitteeMember } from '../ClaringtonHelperMethods/MyHelperMethods';
 import { NewCommitteeMemberFormComponent } from './NewCommitteeMemberFormComponent';
 import { MyComboBox, PhoneInput, PostalCodeInput } from './MyFormComponents';
 
@@ -29,10 +29,16 @@ export default class RenewMemberForm extends React.Component<IRenewMemberFormPro
         });
     }
 
+    private _onSubmit = values => {
+        console.log('Renew Member Form Submit');
+        console.log(values);
+        RenewCommitteeMember(values);
+    }
+
     public render(): React.ReactElement<IRenewMemberFormProps> {
         return (<div style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '900px' }}>
             <Form
-                onSubmit={e => console.log(e)}
+                onSubmit={this._onSubmit}
                 initialValues={{
                     Committees: [{
                         CommitteeName: this.props?.context?.pageContext.list.title ? this.props.context?.pageContext.list.title : undefined,

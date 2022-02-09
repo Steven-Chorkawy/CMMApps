@@ -170,12 +170,18 @@ export const CreateCommitteeMemberHistoryItem = async (committeeMemberHistoryIte
     await sp.web.lists.getByTitle(MyLists.CommitteeMemberHistory).items.add({ ...committeeMemberHistoryItem });
 
     let committeeMemberContactInfoRetention = await CalculateMemberInfoRetention(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId);
-    
+
     await sp.web.lists.getByTitle(MyLists.Members).items.getById(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId).update({
         RetentionDate: committeeMemberContactInfoRetention.date,
         RetentionDateCommittee: committeeMemberContactInfoRetention.committee
     });
 };
+
+export const RenewCommitteeMember = async (values: any): Promise<any> => {
+    console.log('RenewCommitteeMember');
+    console.log(values);
+    return;
+}
 //#endregion
 
 //#region Read
