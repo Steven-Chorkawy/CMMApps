@@ -73,7 +73,6 @@ export const CalculateMemberInfoRetention = async (memberId: number): Promise<{ 
         let tmpDate = new Date(memberHistory[0].OData__EndDate);
         output = new Date(tmpDate.getFullYear() + RETENTION_PERIOD, tmpDate.getMonth(), tmpDate.getDate());
         committeeName = memberHistory[0].CommitteeName;
-        debugger;
     }
 
     return { date: output, committee: committeeName };
@@ -158,7 +157,6 @@ export const CreateDocumentSet = async (input): Promise<IItemUpdateResult> => {
         newFolderResult = await sp.web.folders.add(FOLDER_NAME);
     } catch (error) {
         console.error(error);
-        debugger;
         throw error;
     }
 
@@ -172,7 +170,7 @@ export const CreateCommitteeMemberHistoryItem = async (committeeMemberHistoryIte
     await sp.web.lists.getByTitle(MyLists.CommitteeMemberHistory).items.add({ ...committeeMemberHistoryItem });
 
     let committeeMemberContactInfoRetention = await CalculateMemberInfoRetention(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId);
-    debugger;
+    
     await sp.web.lists.getByTitle(MyLists.Members).items.getById(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId).update({
         RetentionDate: committeeMemberContactInfoRetention.date,
         RetentionDateCommittee: committeeMemberContactInfoRetention.committee
