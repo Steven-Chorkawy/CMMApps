@@ -181,7 +181,7 @@ export const RenewCommitteeMember = async (values: any): Promise<any> => {
     console.log('RenewCommitteeMember');
     console.log(values);
     return;
-}
+};
 //#endregion
 
 //#region Read
