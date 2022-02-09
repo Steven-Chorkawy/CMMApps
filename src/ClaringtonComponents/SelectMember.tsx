@@ -31,7 +31,26 @@ export class SelectMember extends React.Component<any, ISelectMemberState> {
             selectedMember: undefined
         };
 
-        GetMembers().then(members => this.setState({ members: members }));
+        GetMembers().then(members => {
+            this.setState({ members: members });
+            if (this.props.committeeMemberID) {
+                this._onComboBoxChange(null, {
+                    data: { ...members.find(f => f.ID === this.props.committeeMemberID) }
+                });
+            }
+        });
+    }
+
+    private _onComboBoxChange = (event, option) => {
+        debugger;
+        if (event) {
+            event.preventDefault();
+        }
+        console.log('_onComboBoxChange');
+        console.log(option.data);
+        // ! This calls the fields onChange event which in turn passes the new selected value to the form state.
+        this.props.onChange({ value: { ...option.data } });
+        this.setState({ selectedMember: option.data });
     }
 
     public render() {
@@ -47,7 +66,6 @@ export class SelectMember extends React.Component<any, ISelectMemberState> {
             marginLeft: '5px',
         };
 
-
         const stackStyle = {
             marginBottom: '10px',
         };
@@ -60,14 +78,10 @@ export class SelectMember extends React.Component<any, ISelectMemberState> {
                             <ComboBox
                                 label={this.props.label}
                                 options={this.state.members.map((member: IMemberListItem) => {
-                                    return { key: member.Title, text: member.Title, data: { ...member } };
+                                    return { key: member.ID, text: member.Title, data: { ...member } };
                                 })}
-                                onChange={(event, option) => {
-                                    event.preventDefault();
-                                    // ! This calls the fields onChange event which in turn passes the new selected value to the form state.
-                                    this.props.onChange({ value: { ...option.data } });
-                                    this.setState({ selectedMember: option.data });
-                                }}
+                                onChange={this._onComboBoxChange}
+                                defaultSelectedKey={this.props.committeeMemberID ? this.props.committeeMemberID : undefined}
                                 required={true}
                             />
                             <Separator />

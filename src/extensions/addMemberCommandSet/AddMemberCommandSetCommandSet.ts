@@ -15,6 +15,7 @@ import * as strings from 'AddMemberCommandSetCommandSetStrings';
 import { sp } from '@pnp/sp';
 import { GetMembers } from '../../ClaringtonHelperMethods/MyHelperMethods';
 import AddMemberSidePanel from '../../ClaringtonComponents/AddMemberSidePanel';
+import RenewMemberSidePanel, { IRenewMemberSidePanelProps } from '../../ClaringtonComponents/RenewMemberSidePanel';
 
 
 /**
@@ -53,6 +54,10 @@ export default class AddMemberCommandSetCommandSet extends BaseListViewCommandSe
   @override
   public onListViewUpdated(event: IListViewCommandSetListViewUpdatedParameters): void {
     const compareRenewCommand: Command = this.tryGetCommand('COMMAND_RENEW_MEMBER');
+
+    console.log('onListViewUpdated');
+    console.log(event);
+
     if (compareRenewCommand) {
       // This command should be hidden unless exactly one row is selected.
       compareRenewCommand.visible = event.selectedRows.length === 1;
@@ -61,17 +66,29 @@ export default class AddMemberCommandSetCommandSet extends BaseListViewCommandSe
 
   @override
   public onExecute(event: IListViewCommandSetExecuteEventParameters): void {
+    const div = document.createElement('div');
+    console.log('onExecute');
+    console.log(event);
+    if (event.selectedRows && event.selectedRows.length > 0) {
+      console.log(event.selectedRows[0].getValueByName('Title'));
+      console.log(event.selectedRows[0].getValueByName('SPFX_CommitteeMemberDisplayName'));
+    }
+
     switch (event.itemId) {
       case 'COMMAND_ADD_MEMBER':
-        const div = document.createElement('div');
-        const element: React.ReactElement<any> = React.createElement(AddMemberSidePanel, {
+        const addMemberElement: React.ReactElement<any> = React.createElement(AddMemberSidePanel, {
           isOpen: true,
           context: this.context,
         });
-        ReactDOM.render(element, div);
+        ReactDOM.render(addMemberElement, div);
         break;
       case 'COMMAND_RENEW_MEMBER':
-        alert('RENEW MEMBER CLICKED!');
+        const renewMemberElement: React.ReactElement<any> = React.createElement(RenewMemberSidePanel, {
+          context: this.context,
+          isOpen: true,
+          committeeMemberID: event.selectedRows[0].getValueByName('SPFX_CommitteeMemberDisplayName')[0].lookupId
+        });
+        ReactDOM.render(renewMemberElement, div);
         break;
       default:
         throw new Error('Unknown command');
