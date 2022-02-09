@@ -33,6 +33,15 @@ export default class RenewMemberForm extends React.Component<IRenewMemberFormPro
         return (<div style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '900px' }}>
             <Form
                 onSubmit={e => console.log(e)}
+                initialValues={{
+                    Committees: [{
+                        CommitteeName: this.props?.context?.pageContext.list.title ? this.props.context?.pageContext.list.title : undefined,
+                        Position: undefined,
+                        StartDate: undefined,
+                        _EndDate: undefined,
+                        _Status: undefined
+                    }]
+                }}
                 render={(formRenderProps) => (
                     <FormElement>
                         <h2>Renew Committee Member</h2>
