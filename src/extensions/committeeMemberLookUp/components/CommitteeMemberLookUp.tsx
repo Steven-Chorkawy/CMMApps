@@ -54,7 +54,8 @@ export default class CommitteeMemberLookUp extends React.Component<any, ICommitt
                 <p>Content goes here.</p>
               </Panel>
             }
-          </div> : <MessageBar messageBarType={MessageBarType.error}>Cannot Get Member Details!</MessageBar>
+          </div> :
+            <MessageBar messageBarType={MessageBarType.error}>Cannot Get Member Details!</MessageBar>
         }
       </div>
     );
