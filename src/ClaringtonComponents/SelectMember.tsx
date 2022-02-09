@@ -42,12 +42,9 @@ export class SelectMember extends React.Component<any, ISelectMemberState> {
     }
 
     private _onComboBoxChange = (event, option) => {
-        debugger;
         if (event) {
             event.preventDefault();
         }
-        console.log('_onComboBoxChange');
-        console.log(option.data);
         // ! This calls the fields onChange event which in turn passes the new selected value to the form state.
         this.props.onChange({ value: { ...option.data } });
         this.setState({ selectedMember: option.data });
