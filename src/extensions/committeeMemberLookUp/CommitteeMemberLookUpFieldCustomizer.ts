@@ -10,6 +10,7 @@ import {
 
 import * as strings from 'CommitteeMemberLookUpFieldCustomizerStrings';
 import CommitteeMemberLookUp from './components/CommitteeMemberLookUp';
+import { sp } from '@pnp/sp';
 
 /**
  * If your field customizer uses the ClientSideComponentProperties JSON input,
@@ -27,18 +28,31 @@ export default class CommitteeMemberLookUpFieldCustomizer
   extends BaseFieldCustomizer<ICommitteeMemberLookUpFieldCustomizerProperties> {
 
   @override
-  public onInit(): Promise<void> {
+  public async onInit(): Promise<void> {
     // Add your custom initialization to this method.  The framework will wait
     // for the returned promise to resolve before firing any BaseFieldCustomizer events.
     Log.info(LOG_SOURCE, 'Activated CommitteeMemberLookUpFieldCustomizer with properties:');
     Log.info(LOG_SOURCE, JSON.stringify(this.properties, undefined, 2));
     Log.info(LOG_SOURCE, `The following string should be equal: "CommitteeMemberLookUpFieldCustomizer" and "${strings.Title}"`);
+
+    await super.onInit().then(() => {
+      sp.setup({
+        spfxContext: this.context,
+        sp: {
+          headers: {
+            "Accept": "application/json; odata=nometadata"
+          },
+          baseUrl: this.context.pageContext.web.absoluteUrl
+        }
+      });
+    });
+
     return Promise.resolve();
   }
 
   @override
   public onRenderCell(event: IFieldCustomizerCellEventParameters): void {
-    const committeeMemberLookUp: React.ReactElement<{}> = React.createElement(CommitteeMemberLookUp, event);
+    const committeeMemberLookUp: React.ReactElement<{}> = React.createElement(CommitteeMemberLookUp, { context: this.context, ...event });
     ReactDOM.render(committeeMemberLookUp, event.domElement);
   }
 

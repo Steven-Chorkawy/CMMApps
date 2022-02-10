@@ -57,6 +57,7 @@ export default class CommitteeMemberLookUp extends React.Component<any, ICommitt
                 <MemberDetailsComponent
                   // this.props.fieldValue[0] must be checked first.
                   memberId={this.props.fieldValue[0].lookupId}
+                  context={this.props.context}
                 />
               </Panel>
             }
