@@ -231,6 +231,14 @@ export const GetLibraryContentTypes = async (libraryTitle: string): Promise<stri
 
 export const GetMembers = async (): Promise<IMemberListItem[]> => await sp.web.lists.getByTitle(MyLists.Members).items.getAll();
 
+export const GetMember = async (id: number): Promise<any> => {
+    let output: any = {};
+    output.member = await sp.web.lists.getByTitle(MyLists.Members).items.getById(id).get();
+    output.history = await sp.web.lists.getByTitle(MyLists.CommitteeMemberHistory).items.select("CommitteeName, StartDate, OData__EndDate, SPFX_CommitteeMemberDisplayName/Title,SPFX_CommitteeMemberDisplayName/Id").expand("SPFX_CommitteeMemberDisplayName").get();
+    output.history = output.history.filter(f => f.SPFX_CommitteeMemberDisplayName.Id === id);
+
+    return output;
+}
 
 /**
  * TODO: Finish this method. 

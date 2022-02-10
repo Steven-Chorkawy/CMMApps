@@ -3,6 +3,7 @@ import { override } from '@microsoft/decorators';
 import * as React from 'react';
 import { ActionButton, MessageBar, Panel, PanelType } from 'office-ui-fabric-react';
 import { MessageBarType } from '@microsoft/office-ui-fabric-react-bundle';
+import MemberDetailsComponent from '../../../ClaringtonComponents/MemberDetailsComponent';
 
 const LOG_SOURCE: string = 'CommitteeMemberLookUp';
 
@@ -29,10 +30,12 @@ export default class CommitteeMemberLookUp extends React.Component<any, ICommitt
 
   @override
   public render(): React.ReactElement<{}> {
+    console.log(this.props);
+
     return (
       <div>
         {
-          this.props.fieldValue ? <div>
+          this.props.fieldValue && this.props.fieldValue.length > 0 ? <div>
             <ActionButton
               iconProps={{ iconName: 'ContactInfo' }}
               onClick={e => {
@@ -44,14 +47,17 @@ export default class CommitteeMemberLookUp extends React.Component<any, ICommitt
             {
               this.state.isPanelOpen &&
               <Panel
-                headerText="TODO: Update this Panel is data."
+                headerText={this.props.fieldValue[0].lookupValue}
                 type={PanelType.large}
                 isOpen={this.state.isPanelOpen}
                 onDismiss={e => { this.setState({ isPanelOpen: false }); }}
                 // You MUST provide this prop! Otherwise screen readers will just say "button" with no label.
                 closeButtonAriaLabel="Close"
               >
-                <p>Content goes here.</p>
+                <MemberDetailsComponent
+                  // this.props.fieldValue[0] must be checked first.
+                  memberId={this.props.fieldValue[0].lookupId}
+                />
               </Panel>
             }
           </div> :
