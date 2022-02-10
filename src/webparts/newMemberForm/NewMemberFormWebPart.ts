@@ -20,7 +20,6 @@ export interface INewMemberFormWebPartProps {
 export default class NewMemberFormWebPart extends BaseClientSideWebPart<INewMemberFormWebPartProps> {
 
   public render(): void {
-    CalculateMemberInfoRetention(47);
 
     const element: React.ReactElement<INewMemberFormProps> = React.createElement(
       NewMemberForm,

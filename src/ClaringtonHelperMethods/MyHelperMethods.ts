@@ -17,6 +17,7 @@ import { IItemAddResult, IItemUpdateResult } from "@pnp/sp/items";
 import { IContentTypeInfo } from "@pnp/sp/content-types";
 import { IFolderAddResult } from "@pnp/sp/folders";
 import { ICommitteeMemberHistoryListItem } from "../ClaringtonInterfaces/ICommitteeMemberHistoryListItem";
+import { SwatchColorPicker } from "office-ui-fabric-react";
 
 
 //#region Constants
@@ -103,13 +104,13 @@ export const CreateNewCommitteeMember = async (memberId: number, committee: any)
     let docSet = await (await CreateDocumentSet({ LibraryTitle: committee.CommitteeName, Title: member.Title })).item.get();
 
     // Step 2: Update Metadata.
-    sp.web.lists.getByTitle(committee.CommitteeName).items.getById(docSet.ID).update({
-        OData__EndDate: committee._EndDate,
-        StartDate: committee.StartDate,
-        Position: committee.Position,
-        OData__Status: committee._Status,
-        SPFX_CommitteeMemberDisplayNameId: memberId
-    });
+    // sp.web.lists.getByTitle(committee.CommitteeName).items.getById(docSet.ID).update({
+    //     OData__EndDate: committee._EndDate,
+    //     StartDate: committee.StartDate,
+    //     Position: committee.Position,
+    //     OData__Status: committee._Status,
+    //     SPFX_CommitteeMemberDisplayNameId: memberId
+    // });
 
     // Step 3: Upload Attachments. 
     if (committee.Files) {
@@ -124,7 +125,7 @@ export const CreateNewCommitteeMember = async (memberId: number, committee: any)
     // TODO: How do I manage this relationship? 
 
     // Step 5: Create a committee member history list item record.
-    CreateCommitteeMemberHistoryItem({
+    let termHistoryResult: any = await CreateCommitteeMemberHistoryItem({
         CommitteeName: committee.CommitteeName,
         OData__EndDate: committee._EndDate,
         StartDate: committee.StartDate,
@@ -133,8 +134,15 @@ export const CreateNewCommitteeMember = async (memberId: number, committee: any)
         SPFX_CommitteeMemberDisplayNameId: memberId,
         MemberID: memberId.toString(),
         Title: `${member.FirstName} ${member.LastName}`
-    }).then(termHistoryItemResult => {
-        console.log(termHistoryItemResult);
+    });
+    debugger;
+    sp.web.lists.getByTitle(committee.CommitteeName).items.getById(docSet.ID).update({
+        OData__EndDate: committee._EndDate,
+        StartDate: committee.StartDate,
+        Position: committee.Position,
+        OData__Status: committee._Status,
+        SPFX_CommitteeMemberDisplayNameId: memberId,
+        CurrentTermId: termHistoryResult.ID
     });
 };
 
@@ -167,15 +175,16 @@ export const CreateDocumentSet = async (input): Promise<IItemUpdateResult> => {
     });
 };
 
-export const CreateCommitteeMemberHistoryItem = async (committeeMemberHistoryItem: ICommitteeMemberHistoryListItem) => {
-    await sp.web.lists.getByTitle(MyLists.CommitteeMemberHistory).items.add({ ...committeeMemberHistoryItem });
-
+export const CreateCommitteeMemberHistoryItem = async (committeeMemberHistoryItem: ICommitteeMemberHistoryListItem): Promise<any> => {
+    let cmmhAddResult = await sp.web.lists.getByTitle(MyLists.CommitteeMemberHistory).items.add({ ...committeeMemberHistoryItem })
     let committeeMemberContactInfoRetention = await CalculateMemberInfoRetention(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId);
-    debugger;
-    return await sp.web.lists.getByTitle(MyLists.Members).items.getById(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId).update({
+    await sp.web.lists.getByTitle(MyLists.Members).items.getById(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId).update({
         RetentionDate: committeeMemberContactInfoRetention.date,
         RetentionDateCommittee: committeeMemberContactInfoRetention.committee
     });
+
+    
+    return await cmmhAddResult.item.get();
 };
 //#endregion
 
