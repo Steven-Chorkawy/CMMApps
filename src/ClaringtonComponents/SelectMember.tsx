@@ -32,8 +32,6 @@ export class SelectMember extends React.Component<any, ISelectMemberState> {
         };
 
         GetMembers().then(members => {
-            console.log('members');
-            console.log(members);
             this.setState({ members: members });
         });
     }
@@ -70,8 +68,6 @@ export class SelectMember extends React.Component<any, ISelectMemberState> {
                                     event.preventDefault();
                                     // ! This calls the fields onChange event which in turn passes the new selected value to the form state.
                                     this.props.onChange({ value: { ...option.data } });
-                                    console.log(event);
-                                    console.log(option);
                                     this.setState({ selectedMember: option.data });
                                 }}
                                 required={true}

@@ -83,7 +83,6 @@ export const CalculateMemberInfoRetention = async (memberId: number): Promise<{ 
 
 //#region Create
 export const CreateNewMember = async (member: IMemberListItem): Promise<IItemAddResult> => {
-    console.log('CreateNewMember');
     member.Title = `${member.FirstName}, ${member.LastName}`;
     // add an item to the list
     let iar = await sp.web.lists.getByTitle(MyLists.Members).items.add(member);
@@ -102,8 +101,6 @@ export const CreateNewCommitteeMember = async (memberId: number, committee: any)
 
     // Step 1: Create the document set.
     let docSet = await (await CreateDocumentSet({ LibraryTitle: committee.CommitteeName, Title: member.Title })).item.get();
-    console.log('doc set');
-    console.log(docSet);
 
     // Step 2: Update Metadata.
     sp.web.lists.getByTitle(committee.CommitteeName).items.getById(docSet.ID).update({
@@ -136,6 +133,8 @@ export const CreateNewCommitteeMember = async (memberId: number, committee: any)
         SPFX_CommitteeMemberDisplayNameId: memberId,
         MemberID: memberId.toString(),
         Title: `${member.FirstName} ${member.LastName}`
+    }).then(termHistoryItemResult => {
+        console.log(termHistoryItemResult);
     });
 };
 
@@ -173,7 +172,7 @@ export const CreateCommitteeMemberHistoryItem = async (committeeMemberHistoryIte
 
     let committeeMemberContactInfoRetention = await CalculateMemberInfoRetention(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId);
     debugger;
-    await sp.web.lists.getByTitle(MyLists.Members).items.getById(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId).update({
+    return await sp.web.lists.getByTitle(MyLists.Members).items.getById(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId).update({
         RetentionDate: committeeMemberContactInfoRetention.date,
         RetentionDateCommittee: committeeMemberContactInfoRetention.committee
     });
