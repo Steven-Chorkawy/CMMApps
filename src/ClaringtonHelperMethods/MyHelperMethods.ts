@@ -81,7 +81,7 @@ export const CalculateMemberInfoRetention = async (memberId: number): Promise<{ 
 
 //#region Create
 export const CreateNewMember = async (member: IMemberListItem): Promise<IItemAddResult> => {
-    member.Title = `${member.FirstName}, ${member.LastName}`;
+    member.Title = `${member.LastName}, ${member.FirstName}`;
     // add an item to the list
     let iar = await sp.web.lists.getByTitle(MyLists.Members).items.add(member);
     return iar;
