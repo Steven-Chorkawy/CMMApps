@@ -16,7 +16,7 @@ import ICommitteeFileItem from "../ClaringtonInterfaces/ICommitteeFileItem";
 import { IItemAddResult, IItemUpdateResult } from "@pnp/sp/items";
 import { IContentTypeInfo } from "@pnp/sp/content-types";
 import { IFolderAddResult } from "@pnp/sp/folders";
-import { ICommitteeMemberHistoryListItem } from "../ClaringtonInterfaces/ICommitteeMemberHistoryListItem";
+import { ICommitteeMemberHistoryListItem, ICommitteeMemberHistory_NewListItem } from "../ClaringtonInterfaces/ICommitteeMemberHistory";
 
 //#region Constants
 export const FORM_DATA_INDEX = "formDataIndex";
@@ -166,7 +166,7 @@ export const CreateDocumentSet = async (input): Promise<IItemUpdateResult> => {
     });
 };
 
-export const CreateCommitteeMemberHistoryItem = async (committeeMemberHistoryItem: ICommitteeMemberHistoryListItem) => {
+export const CreateCommitteeMemberHistoryItem = async (committeeMemberHistoryItem: ICommitteeMemberHistory_NewListItem) => {
     await sp.web.lists.getByTitle(MyLists.CommitteeMemberHistory).items.add({ ...committeeMemberHistoryItem });
 
     let committeeMemberContactInfoRetention = await CalculateMemberInfoRetention(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId);
@@ -231,14 +231,9 @@ export const GetLibraryContentTypes = async (libraryTitle: string): Promise<stri
 
 export const GetMembers = async (): Promise<IMemberListItem[]> => await sp.web.lists.getByTitle(MyLists.Members).items.getAll();
 
-export const GetMember = async (id: number): Promise<any> => {
-    let output: any = {};
-    output.member = await sp.web.lists.getByTitle(MyLists.Members).items.getById(id).get();
-    output.history = await sp.web.lists.getByTitle(MyLists.CommitteeMemberHistory).items.select("CommitteeName, StartDate, OData__EndDate, SPFX_CommitteeMemberDisplayName/Title,SPFX_CommitteeMemberDisplayName/Id").expand("SPFX_CommitteeMemberDisplayName").get();
-    output.history = output.history.filter(f => f.SPFX_CommitteeMemberDisplayName.Id === id);
+export const GetMember = async (id: number): Promise<any> => await sp.web.lists.getByTitle(MyLists.Members).items.getById(id).get();
 
-    return output;
-}
+export const GetMembersTermHistory = async (id: number): Promise<ICommitteeMemberHistoryListItem[]> => await sp.web.lists.getByTitle(MyLists.CommitteeMemberHistory).items.filter(`SPFX_CommitteeMemberDisplayNameId eq ${id}`).get();
 
 /**
  * TODO: Finish this method. 

@@ -47,7 +47,7 @@ export default class CommitteeMemberLookUp extends React.Component<any, ICommitt
             {
               this.state.isPanelOpen &&
               <Panel
-                headerText={this.props.fieldValue[0].lookupValue}
+                headerText={'Committee Member Details'}
                 type={PanelType.large}
                 isOpen={this.state.isPanelOpen}
                 onDismiss={e => { this.setState({ isPanelOpen: false }); }}
