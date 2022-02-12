@@ -21,7 +21,7 @@ export interface ICommitteeMemberHistory_NewListItem {
     FirstName: string;
     LastName: string;
     SPFX_CommitteeMemberDisplayNameId: number;
-    MemberID: string;
+    MemberID: number;
     Title: string;
 }
 

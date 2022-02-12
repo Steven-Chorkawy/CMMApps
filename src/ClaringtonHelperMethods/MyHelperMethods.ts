@@ -133,7 +133,7 @@ export const CreateNewCommitteeMember = async (memberId: number, committee: any)
         FirstName: member.FirstName,
         LastName: member.LastName,
         SPFX_CommitteeMemberDisplayNameId: memberId,
-        MemberID: memberId.toString(),
+        MemberID: memberId,
         Title: `${member.FirstName} ${member.LastName}`
     });
 };
