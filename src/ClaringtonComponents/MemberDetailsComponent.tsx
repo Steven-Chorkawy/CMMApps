@@ -84,7 +84,7 @@ export class CommitteeMemberBreadCrumb extends React.Component<ICommitteeMemberB
                 <span key={3}> in the text of the comment.</span>,
             ],
             timeStamp: 'Just now',
-        }
+        };
 
         return <div>
             <Breadcrumb

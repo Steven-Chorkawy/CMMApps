@@ -9,6 +9,7 @@ import { MyComboBox, PhoneInput, PostalCodeInput } from './MyFormComponents';
 
 import { Form, FormElement, Field, FieldArray, FieldArrayProps } from '@progress/kendo-react-form';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
+import { LocationPicker, ILocationPickerItem } from "@pnp/spfx-controls-react/lib/LocationPicker";
 
 export enum NewMemberFormSaveStatus {
   NewForm = -1,
@@ -104,6 +105,17 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
     } : undefined;
 
     return (<div style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '900px' }}>
+      <div>
+        <LocationPicker
+          context={this.props.context}
+          label="Location"
+        // onChange={(locValue: ILocationPickerItem) => {
+        //   console.log('location change');
+        //   console.log(locValue);
+        //   console.log(locValue.DisplayName + ", " + locValue.Address.Street)
+        // }}
+        />
+      </div>
       <Form
         onSubmit={this._onSubmit}
         initialValues={initialValues}
@@ -123,7 +135,6 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
               <Field name={'Member.CellPhone1'} label={'Cell Phone'} component={PhoneInput} onChange={e => formRenderProps.onChange(e.name, e.value)} />
               <Field name={'Member.WorkPhone'} label={'Work Phone'} component={PhoneInput} onChange={e => formRenderProps.onChange(e.name, e.value)} />
               <Field name={'Member.HomePhone'} label={'Home Phone'} component={PhoneInput} onChange={e => formRenderProps.onChange(e.name, e.value)} />
-
 
               <Field name={'Member.WorkAddress'} label={'Street Address'} component={TextField} />
               <Field name={'Member.WorkCity'} label={'City'} component={TextField} />
