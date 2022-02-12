@@ -33,6 +33,14 @@
           "manifest": "./src/extensions/addMemberCommandSet/AddMemberCommandSetCommandSet.manifest.json"
         }
       ]
+    },
+    "committee-member-dashboard-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/committeeMemberDashboard/CommitteeMemberDashboardWebPart.js",
+          "manifest": "./src/webparts/committeeMemberDashboard/CommitteeMemberDashboardWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -41,6 +49,7 @@
     "AddCommitteeMemberFormWebPartStrings": "lib/webparts/addCommitteeMemberForm/loc/{locale}.js",
     "CommitteeMemberLookUpFieldCustomizerStrings": "lib/extensions/committeeMemberLookUp/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
-    "AddMemberCommandSetCommandSetStrings": "lib/extensions/addMemberCommandSet/loc/{locale}.js"
+    "AddMemberCommandSetCommandSetStrings": "lib/extensions/addMemberCommandSet/loc/{locale}.js",
+    "CommitteeMemberDashboardWebPartStrings": "lib/webparts/committeeMemberDashboard/loc/{locale}.js"
   }
 }
