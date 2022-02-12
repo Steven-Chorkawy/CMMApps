@@ -1,4 +1,4 @@
-import { Panel, PanelType, Pivot, Dropdown, Separator, PivotItem, Label, Text, ITextProps, Stack, ActionButton, DefaultButton, Breadcrumb, IBreadcrumbItem, Shimmer } from '@fluentui/react';
+import { Panel, PanelType, Pivot, Dropdown, Separator, PivotItem, Label, Text, ITextProps, Stack, ActionButton, DefaultButton, Breadcrumb, IBreadcrumbItem, Shimmer, IFontStyles, Link, Icon, mergeStyleSets, ActivityItem } from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -21,10 +21,9 @@ export interface IMemberDetailsComponentState {
 }
 
 export interface ICommitteeMemberBreadCrumbProps {
-    committeeName: string; // Name of a library. 
-    memberId: number;
-    memberName: string;
     context: WebPartContext;
+    committeeTerm: ICommitteeMemberHistoryListItem;
+    allTerms?: ICommitteeMemberHistoryListItem[];     // Used to preview past committees.
 }
 //#endregion
 
@@ -34,22 +33,58 @@ export class CommitteeMemberBreadCrumb extends React.Component<ICommitteeMemberB
     }
 
     public render(): React.ReactElement<any> {
-        const ID_FILTER = `?=FilterValue72&FilterField1=Member_x0020_Display_x0020_Name_x003a_ID&FilterValue1=${this.props.memberId}`;
-        const LIBRARY_URL = `${this.props.context.pageContext.web.absoluteUrl}/${this.props.committeeName}`;
+        const ID_FILTER = `?=FilterValue72&FilterField1=Member_x0020_Display_x0020_Name_x003a_ID&FilterValue1=${this.props.committeeTerm.MemberID}`;
+        const LIBRARY_URL = `${this.props.context.pageContext.web.absoluteUrl}/${this.props.committeeTerm.CommitteeName}`;
 
 
         const itemsWithHref: IBreadcrumbItem[] = [
             // Normally each breadcrumb would have a unique href, but to make the navigation less disruptive
             // in the example, it uses the breadcrumb page as the href for all the items
             {
-                text: this.props.committeeName, key: 'CommitteeLibrary', href: `${LIBRARY_URL}`,
-                // onRender: e => { console.log('IBreadcrumbItem'); console.log(e); return <div>hello world!</div>; }
+                text: this.props.committeeTerm.CommitteeName, key: 'CommitteeLibrary', href: `${LIBRARY_URL}`,
+                // onRender: e => { console.log('IBreadcrumbItem'); console.log(e); return <div>hello world!<div>{ }</div></div>; }
             },
-            { text: `${this.props.memberName}`, key: 'Member', href: `${LIBRARY_URL}${ID_FILTER}`, isCurrentItem: true },
+            { text: `${this.props.committeeTerm.CommitteeName}`, key: 'Member', href: `${LIBRARY_URL}${ID_FILTER}`, isCurrentItem: true },
         ];
 
-
-
+        const classNames = mergeStyleSets({
+            exampleRoot: {
+                marginTop: '20px',
+            },
+            nameText: {
+                fontWeight: 'bold',
+            },
+        });
+        const activityItem = {
+            key: 1,
+            activityDescription: [
+                <Link
+                    key={1}
+                    className={classNames.nameText}
+                    onClick={() => {
+                        alert('View More Terms...');
+                    }}
+                >
+                    View More Terms...
+                </Link>,
+                <span key={2}> commented</span>,
+            ],
+            activityIcon: <Icon iconName={'Add'} />,
+            comments: [
+                <span key={1}>Hello! I am making a comment and mentioning </span>,
+                <Link
+                    key={2}
+                    className={classNames.nameText}
+                    onClick={() => {
+                        alert('An @mentioned name was clicked.');
+                    }}
+                >
+                    @Anđela Debeljak
+                </Link>,
+                <span key={3}> in the text of the comment.</span>,
+            ],
+            timeStamp: 'Just now',
+        }
 
         return <div>
             <Breadcrumb
@@ -58,6 +93,14 @@ export class CommitteeMemberBreadCrumb extends React.Component<ICommitteeMemberB
                 ariaLabel="Breadcrumb with items rendered as buttons"
                 overflowAriaLabel="More links"
             />
+            <div>
+                <div>
+                    <Text variant={'small'}>
+                        <span title={`Start Date`}>{new Date(this.props.committeeTerm.StartDate).toLocaleDateString()}</span> - <span title={`End Date`}>{new Date(this.props.committeeTerm.OData__EndDate).toLocaleDateString()}</span>
+                    </Text>
+                </div>
+                <ActivityItem {...activityItem} key={activityItem.key} className={classNames.exampleRoot} />
+            </div>
         </div >;
     }
 }
@@ -137,9 +180,8 @@ export default class MemberDetailsComponent extends React.Component<IMemberDetai
                                         {this.state.termHistories.map(term => {
                                             return <div>
                                                 <CommitteeMemberBreadCrumb
-                                                    committeeName={term.CommitteeName}
-                                                    memberId={term.MemberID}
-                                                    memberName={`${term.LastName}, ${term.FirstName}`}
+                                                    committeeTerm={term}
+                                                    allTerms={this.state.allTermHistories}
                                                     context={this.props.context} />
                                             </div>;
                                         })}
