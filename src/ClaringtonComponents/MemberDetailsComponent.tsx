@@ -1,4 +1,4 @@
-import { Panel, PanelType, Pivot, Dropdown, Separator, PivotItem, Label, Text, ITextProps, Stack, ActionButton, DefaultButton } from '@fluentui/react';
+import { Panel, PanelType, Pivot, Dropdown, Separator, PivotItem, Label, Text, ITextProps, Stack, ActionButton, DefaultButton, Breadcrumb, IBreadcrumbItem, Shimmer } from '@fluentui/react';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -8,6 +8,7 @@ import AddCommitteeMemberForm from './AddCommitteeMemberForm';
 import { MyShimmer } from './MyShimmer';
 import NewMemberForm from './NewMemberForm';
 
+//#region 
 export interface IMemberDetailsComponentProps {
     memberId: number;
     context: WebPartContext;
@@ -15,7 +16,50 @@ export interface IMemberDetailsComponentProps {
 
 export interface IMemberDetailsComponentState {
     member: any;
-    termHistory: ICommitteeMemberHistoryListItem[];
+    allTermHistories: ICommitteeMemberHistoryListItem[];    // A list of all the members terms.  All terms from all committees.
+    termHistories: ICommitteeMemberHistoryListItem[];       // A list of the members most recent term of each committee.  Only one term per committee.
+}
+
+export interface ICommitteeMemberBreadCrumbProps {
+    committeeName: string; // Name of a library. 
+    memberId: number;
+    memberName: string;
+    context: WebPartContext;
+}
+//#endregion
+
+export class CommitteeMemberBreadCrumb extends React.Component<ICommitteeMemberBreadCrumbProps, any> {
+    constructor(props) {
+        super(props);
+    }
+
+    public render(): React.ReactElement<any> {
+        const ID_FILTER = `?=FilterValue72&FilterField1=Member_x0020_Display_x0020_Name_x003a_ID&FilterValue1=${this.props.memberId}`;
+        const LIBRARY_URL = `${this.props.context.pageContext.web.absoluteUrl}/${this.props.committeeName}`;
+
+
+        const itemsWithHref: IBreadcrumbItem[] = [
+            // Normally each breadcrumb would have a unique href, but to make the navigation less disruptive
+            // in the example, it uses the breadcrumb page as the href for all the items
+            {
+                text: this.props.committeeName, key: 'CommitteeLibrary', href: `${LIBRARY_URL}`,
+                // onRender: e => { console.log('IBreadcrumbItem'); console.log(e); return <div>hello world!</div>; }
+            },
+            { text: `${this.props.memberName}`, key: 'Member', href: `${LIBRARY_URL}${ID_FILTER}`, isCurrentItem: true },
+        ];
+
+
+
+
+        return <div>
+            <Breadcrumb
+                items={itemsWithHref}
+                maxDisplayedItems={2}
+                ariaLabel="Breadcrumb with items rendered as buttons"
+                overflowAriaLabel="More links"
+            />
+        </div >;
+    }
 }
 
 export default class MemberDetailsComponent extends React.Component<IMemberDetailsComponentProps, IMemberDetailsComponentState> {
@@ -24,7 +68,8 @@ export default class MemberDetailsComponent extends React.Component<IMemberDetai
 
         this.state = {
             member: undefined,
-            termHistory: undefined
+            termHistories: undefined,
+            allTermHistories: undefined
         };
 
         if (this.props.memberId) {
@@ -37,7 +82,15 @@ export default class MemberDetailsComponent extends React.Component<IMemberDetai
             GetMembersTermHistory(this.props.memberId).then(values => {
                 console.log('GetMembersTermHistory results');
                 console.log(values);
-                this.setState({ termHistory: values });
+                this.setState({
+                    allTermHistories: values,
+                    termHistories: values.filter((value, index, self) => index === self.sort((a, b) => {
+                        // Turn your strings into dates, and then subtract them
+                        // to get a value that is either negative, positive, or zero.
+                        let bb: any = new Date(b.StartDate), aa: any = new Date(b.StartDate);
+                        return bb - aa;
+                    }).findIndex((t) => (t.CommitteeName === value.CommitteeName)))
+                });
             });
         }
     }
@@ -79,17 +132,17 @@ export default class MemberDetailsComponent extends React.Component<IMemberDetai
                         <div>
                             <h3>Committees</h3>
                             {
-                                this.state.termHistory ?
+                                this.state.termHistories ?
                                     <div>
-                                        <ul>
-                                            {
-                                                this.state.termHistory.map(term => {
-                                                    return <li>
-                                                        <a href={`${this.props.context.pageContext.web.absoluteUrl}/${term.CommitteeName}`} target='_blank'>{term.CommitteeName}</a>
-                                                    </li>;
-                                                })
-                                            }
-                                        </ul>
+                                        {this.state.termHistories.map(term => {
+                                            return <div>
+                                                <CommitteeMemberBreadCrumb
+                                                    committeeName={term.CommitteeName}
+                                                    memberId={term.MemberID}
+                                                    memberName={`${term.LastName}, ${term.FirstName}`}
+                                                    context={this.props.context} />
+                                            </div>;
+                                        })}
                                     </div> :
                                     <MyShimmer />
                             }

@@ -233,7 +233,12 @@ export const GetMembers = async (): Promise<IMemberListItem[]> => await sp.web.l
 
 export const GetMember = async (id: number): Promise<any> => await sp.web.lists.getByTitle(MyLists.Members).items.getById(id).get();
 
-export const GetMembersTermHistory = async (id: number): Promise<ICommitteeMemberHistoryListItem[]> => await sp.web.lists.getByTitle(MyLists.CommitteeMemberHistory).items.filter(`SPFX_CommitteeMemberDisplayNameId eq ${id}`).get();
+/**
+ * Get a members term history.
+ * @param id MemberID field from the Committee Member History list.
+ * @returns ICommitteeMemberHistoryListItem[]
+ */
+export const GetMembersTermHistory = async (id: number): Promise<ICommitteeMemberHistoryListItem[]> => await sp.web.lists.getByTitle(MyLists.CommitteeMemberHistory).items.filter(`MemberID eq ${id}`).get();
 
 /**
  * TODO: Finish this method. 

@@ -9,6 +9,7 @@ export interface IMyTempLookup {
 export interface ICommitteeMemberHistoryListItem extends ICommitteeMemberHistory_NewListItem {
     ID: number;
     Id: number;
+    DisplayName: string;
 }
 
 /**
