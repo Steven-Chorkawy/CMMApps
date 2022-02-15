@@ -3,7 +3,7 @@ import { override } from '@microsoft/decorators';
 import * as React from 'react';
 import { ActionButton, MessageBar, Panel, PanelType } from 'office-ui-fabric-react';
 import { MessageBarType } from '@microsoft/office-ui-fabric-react-bundle';
-import MemberDetailsComponent from '../../../ClaringtonComponents/MemberDetailsComponent';
+import { CommitteeMemberDashboard } from '../../../ClaringtonComponents/CommitteeMemberDashboard';
 
 const LOG_SOURCE: string = 'CommitteeMemberLookUp';
 
@@ -54,11 +54,7 @@ export default class CommitteeMemberLookUp extends React.Component<any, ICommitt
                 // You MUST provide this prop! Otherwise screen readers will just say "button" with no label.
                 closeButtonAriaLabel="Close"
               >
-                <MemberDetailsComponent
-                  // this.props.fieldValue[0] must be checked first.
-                  memberId={this.props.fieldValue[0].lookupId}
-                  context={this.props.context}
-                />
+                <CommitteeMemberDashboard context={this.props.context} memberId={this.props.fieldValue[0].lookupId} />
               </Panel>
             }
           </div> :

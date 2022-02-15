@@ -2,14 +2,14 @@ import * as React from 'react';
 import { escape } from '@microsoft/sp-lodash-subset';
 import { ComboBox, Icon, Text } from '@fluentui/react';
 import { WidgetSize, Dashboard } from '@pnp/spfx-controls-react/lib/Dashboard';
-import IMemberListItem from '../../../ClaringtonInterfaces/IMemberListItem';
-import { GetMember, GetMembers } from '../../../ClaringtonHelperMethods/MyHelperMethods';
-import MemberDetailsComponent, { CommitteeMemberContactDetails, CommitteeMemberTermHistory } from '../../../ClaringtonComponents/MemberDetailsComponent';
+import IMemberListItem from '../ClaringtonInterfaces/IMemberListItem';
+import { GetMember, GetMembers } from '../ClaringtonHelperMethods/MyHelperMethods';
+import { CommitteeMemberContactDetails, CommitteeMemberTermHistory } from './MemberDetailsComponent';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 
 export interface ICommitteeMemberDashboardProps {
-  description: string;
+  description?: string;
   memberId?: number;
   context: WebPartContext;
 }
@@ -19,7 +19,7 @@ export interface ICommitteeMemberDashboardState {
   selectedMember?: IMemberListItem;
 }
 
-export default class CommitteeMemberDashboard extends React.Component<ICommitteeMemberDashboardProps, ICommitteeMemberDashboardState> {
+export class CommitteeMemberDashboard extends React.Component<ICommitteeMemberDashboardProps, ICommitteeMemberDashboardState> {
 
   constructor(props) {
     super(props);

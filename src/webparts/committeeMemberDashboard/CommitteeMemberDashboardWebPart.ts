@@ -8,7 +8,7 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'CommitteeMemberDashboardWebPartStrings';
-import CommitteeMemberDashboard, { ICommitteeMemberDashboardProps } from './components/CommitteeMemberDashboard';
+import { CommitteeMemberDashboard, ICommitteeMemberDashboardProps } from '../../ClaringtonComponents/CommitteeMemberDashboard';
 import './components/workbench.module.scss';
 import { sp } from '@pnp/sp';
 
