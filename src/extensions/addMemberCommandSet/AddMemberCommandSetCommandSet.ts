@@ -9,7 +9,6 @@ import {
   IListViewCommandSetListViewUpdatedParameters,
   IListViewCommandSetExecuteEventParameters
 } from '@microsoft/sp-listview-extensibility';
-import { Dialog } from '@microsoft/sp-dialog';
 
 import * as strings from 'AddMemberCommandSetCommandSetStrings';
 import { sp } from '@pnp/sp';
