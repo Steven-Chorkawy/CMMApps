@@ -77,6 +77,21 @@ export const CalculateMemberInfoRetention = async (memberId: number): Promise<{ 
 
     return { date: output, committee: committeeName };
 };
+
+export const CalculateTotalYearsServed = (committeeTerms: ICommitteeMemberHistoryListItem[]): number => {
+    /**
+     * Steps to confirm Total Years Served.
+     */
+
+    let totalYears: number = 0;
+
+    for (let termIndex = 0; termIndex < committeeTerms.length; termIndex++) {
+        const term = committeeTerms[termIndex];
+        
+    }
+
+    return totalYears;
+};
 //#endregion
 
 //#region Create
