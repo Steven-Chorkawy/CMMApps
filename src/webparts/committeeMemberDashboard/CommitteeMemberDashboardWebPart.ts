@@ -10,6 +10,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import * as strings from 'CommitteeMemberDashboardWebPartStrings';
 import CommitteeMemberDashboard from './components/CommitteeMemberDashboard';
 import { ICommitteeMemberDashboardProps } from './components/ICommitteeMemberDashboardProps';
+import './components/workbench.module.scss';
 
 export interface ICommitteeMemberDashboardWebPartProps {
   description: string;
