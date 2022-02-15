@@ -15,6 +15,7 @@ import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { sp } from '@pnp/sp';
 import IMemberListItem from '../ClaringtonInterfaces/IMemberListItem';
 import { MyShimmer } from './MyShimmer';
+import { CommitteeMemberTermHistory } from './MemberDetailsComponent';
 
 
 export interface ISelectMemberState {
@@ -71,7 +72,7 @@ export class SelectMember extends React.Component<any, ISelectMemberState> {
             this.state.members ?
                 <div style={{ padding: '10px', marginBottom: '10px', boxShadow: reactTheme.effects.elevation16 }}>
                     <Stack horizontal tokens={stackTokens}>
-                        <Stack.Item grow={5}>
+                        <Stack.Item grow={4}>
                             <ComboBox
                                 label={this.props.label}
                                 options={this.state.members.map((member: IMemberListItem) => {
@@ -119,13 +120,19 @@ export class SelectMember extends React.Component<any, ISelectMemberState> {
                                 </div>
                             }
                         </Stack.Item>
-                        <Stack.Item grow={1}>
+                        <Stack.Item grow={2}>
                             <h4>Current Committees</h4>
-                            <div>
-                                <MyShimmer />
-                                <MyShimmer />
-                                <MyShimmer />
-                            </div>
+                            {
+                                this.state.selectedMember ?
+                                    <div key={this.state.selectedMember.ID}>
+                                        <CommitteeMemberTermHistory memberID={this.state.selectedMember.ID} context={this.props.context} />
+                                    </div> :
+                                    <div>
+                                        <MyShimmer />
+                                        <MyShimmer />
+                                        <MyShimmer />
+                                    </div>
+                            }
                         </Stack.Item>
                     </Stack>
 

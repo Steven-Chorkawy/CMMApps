@@ -56,6 +56,7 @@ export default class RenewMemberForm extends React.Component<IRenewMemberFormPro
                             label={'Select Member'}
                             require={true}
                             component={SelectMember}
+                            context={this.props.context}
                             committeeMemberID={this.props.committeeMemberID}
                         />
 

@@ -81,13 +81,39 @@ export const CalculateMemberInfoRetention = async (memberId: number): Promise<{ 
 export const CalculateTotalYearsServed = (committeeTerms: ICommitteeMemberHistoryListItem[]): number => {
     /**
      * Steps to confirm Total Years Served.
+     * 1.   Start date must be less than today.  If is not ignore this term as it is invalid.
+     * 2.   End date must be greater than or equal to day.  If it is not use today's date.
+     * 3.   
      */
-
+    debugger;
     let totalYears: number = 0;
+    let termTotal: number = 0;
 
     for (let termIndex = 0; termIndex < committeeTerms.length; termIndex++) {
+        // reset this counter. 
+        termTotal = 0;
+
         const term = committeeTerms[termIndex];
+        let startDate = new Date(term.StartDate),
+            endDate = new Date(term.OData__EndDate),
+            today = new Date();
+
+        console.log(term);
+        if (startDate > today) {
+            debugger;
+            console.log('Something went wrong!');
+            continue; // Continue onto the next iteration. 
+        }
+
+        // End date is currently in the future so we will use today's date to calculate the total terms served. 
+        if (endDate >= today) {
+            endDate = today;
+        }
+
+        termTotal = endDate.getFullYear() - startDate.getFullYear();
         
+        // Add to the running total.
+        totalYears += termTotal;
     }
 
     return totalYears;

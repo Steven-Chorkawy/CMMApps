@@ -2,7 +2,7 @@ import { Panel, PanelType, Pivot, Dropdown, Separator, PivotItem, Label, Text, I
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { GetMember, GetMembersTermHistory } from '../ClaringtonHelperMethods/MyHelperMethods';
+import { CalculateTotalYearsServed, GetMember, GetMembersTermHistory } from '../ClaringtonHelperMethods/MyHelperMethods';
 import { ICommitteeMemberHistoryListItem } from '../ClaringtonInterfaces/ICommitteeMemberHistory';
 import IMemberListItem from '../ClaringtonInterfaces/IMemberListItem';
 import AddCommitteeMemberForm from './AddCommitteeMemberForm';
@@ -60,7 +60,7 @@ export class CommitteeMemberBreadCrumb extends React.Component<ICommitteeMemberB
                 text: this.props.committeeTerm.CommitteeName, key: 'CommitteeLibrary', href: `${LIBRARY_URL}`,
                 // onRender: e => { console.log('IBreadcrumbItem'); console.log(e); return <div>hello world!<div>{ }</div></div>; }
             },
-            { text: `${this.props.committeeTerm.CommitteeName}`, key: 'Member', href: `${LIBRARY_URL}${ID_FILTER}`, isCurrentItem: true },
+            { text: `${this.props.committeeTerm.Title}`, key: 'Member', href: `${LIBRARY_URL}${ID_FILTER}`, isCurrentItem: true },
         ];
 
         const classNames = mergeStyleSets({
@@ -145,6 +145,17 @@ export class CommitteeMemberTermHistory extends React.Component<ICommitteeMember
     public render(): React.ReactElement<any> {
         return this.state.termHistories ?
             <div>
+                {
+                    this.state.allTermHistories &&
+                    <div>
+                        <div>
+                            <Text variant="xLarge">{CalculateTotalYearsServed(this.state.allTermHistories)} Years Served.</Text>
+                        </div>
+                        <div>
+                            <Text variant="small">{this.state.allTermHistories.length} Terms on {this.state.termHistories.length} Committees</Text>
+                        </div>
+                    </div>
+                }
                 {this.state.termHistories.map(term => {
                     return <div>
                         <CommitteeMemberBreadCrumb
@@ -154,8 +165,7 @@ export class CommitteeMemberTermHistory extends React.Component<ICommitteeMember
                     </div>;
                 })}
             </div> :
-            <MyShimmer />
-
+            <MyShimmer />;
     }
 }
 
