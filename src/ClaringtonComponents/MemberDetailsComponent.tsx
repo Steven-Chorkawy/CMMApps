@@ -4,6 +4,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { GetMember, GetMembersTermHistory } from '../ClaringtonHelperMethods/MyHelperMethods';
 import { ICommitteeMemberHistoryListItem } from '../ClaringtonInterfaces/ICommitteeMemberHistory';
+import IMemberListItem from '../ClaringtonInterfaces/IMemberListItem';
 import AddCommitteeMemberForm from './AddCommitteeMemberForm';
 import { MyShimmer } from './MyShimmer';
 import NewMemberForm from './NewMemberForm';
@@ -11,6 +12,7 @@ import NewMemberForm from './NewMemberForm';
 //#region 
 export interface IMemberDetailsComponentProps {
     memberId: number;
+    title?: string;      // Title of the component if any are required.
     context: WebPartContext;
 }
 
@@ -24,6 +26,20 @@ export interface ICommitteeMemberBreadCrumbProps {
     context: WebPartContext;
     committeeTerm: ICommitteeMemberHistoryListItem;
     allTerms?: ICommitteeMemberHistoryListItem[];     // Used to preview past committees.
+}
+
+export interface ICommitteeMemberContactDetails {
+    member: IMemberListItem;
+}
+
+export interface ICommitteeMemberTermHistoryProps {
+    memberID: number;
+    context: WebPartContext;
+}
+
+export interface ICommitteeMemberTermHistoryState {
+    allTermHistories: any[];
+    termHistories: any[];
 }
 //#endregion
 
@@ -99,9 +115,79 @@ export class CommitteeMemberBreadCrumb extends React.Component<ICommitteeMemberB
                         <span title={`Start Date`}>{new Date(this.props.committeeTerm.StartDate).toLocaleDateString()}</span> - <span title={`End Date`}>{new Date(this.props.committeeTerm.OData__EndDate).toLocaleDateString()}</span>
                     </Text>
                 </div>
-                <ActivityItem {...activityItem} key={activityItem.key} className={classNames.exampleRoot} />
+                {/* <ActivityItem {...activityItem} key={activityItem.key} className={classNames.exampleRoot} /> */}
             </div>
         </div >;
+    }
+}
+
+export class CommitteeMemberTermHistory extends React.Component<ICommitteeMemberTermHistoryProps, ICommitteeMemberTermHistoryState>{
+    constructor(props) {
+        super(props);
+        this.state = {
+            allTermHistories: undefined,
+            termHistories: undefined
+        };
+
+        GetMembersTermHistory(this.props.memberID).then(values => {
+            this.setState({
+                allTermHistories: values,
+                termHistories: values.filter((value, index, self) => index === self.sort((a, b) => {
+                    // Turn your strings into dates, and then subtract them
+                    // to get a value that is either negative, positive, or zero.
+                    let bb: any = new Date(b.StartDate), aa: any = new Date(b.StartDate);
+                    return bb - aa;
+                }).findIndex((t) => (t.CommitteeName === value.CommitteeName)))
+            });
+        });
+    }
+
+    public render(): React.ReactElement<any> {
+        return this.state.termHistories ?
+            <div>
+                {this.state.termHistories.map(term => {
+                    return <div>
+                        <CommitteeMemberBreadCrumb
+                            committeeTerm={term}
+                            allTerms={this.state.allTermHistories}
+                            context={this.props.context} />
+                    </div>;
+                })}
+            </div> :
+            <MyShimmer />
+
+    }
+}
+
+export class CommitteeMemberContactDetails extends React.Component<ICommitteeMemberContactDetails, {}> {
+    /**
+     *
+     */
+    constructor(props) {
+        super(props);
+    }
+
+    private _detailDisplay = (prop, label) => {
+        return <div> <span>{label}: {this.props.member[prop] && this.props.member[prop]}</span></div>;
+    }
+
+    public render(): React.ReactElement<any> {
+        return <div>
+            <Stack horizontal={true} wrap={true}>
+                <Stack.Item grow={6}>
+                    {this._detailDisplay('EMail', 'Email')}
+                    {this._detailDisplay('EMail2', 'Email')}
+                    {this._detailDisplay('CellPhone1', 'Cell Phone')}
+                    {this._detailDisplay('HomePhone', 'Home Phone')}
+                    {this._detailDisplay('WorkPhone', 'Work Phone')}
+                </Stack.Item>
+                <Stack.Item grow={6}>
+                    {this._detailDisplay('Address', 'Address')}
+                    {this._detailDisplay('PostalCode', 'Postal Code')}
+                    {this._detailDisplay('City', 'City')}
+                </Stack.Item>
+            </Stack>
+        </div>;
     }
 }
 
@@ -121,31 +207,15 @@ export default class MemberDetailsComponent extends React.Component<IMemberDetai
                 console.log(value);
                 this.setState({ member: value });
             });
-
-            GetMembersTermHistory(this.props.memberId).then(values => {
-                console.log('GetMembersTermHistory results');
-                console.log(values);
-                this.setState({
-                    allTermHistories: values,
-                    termHistories: values.filter((value, index, self) => index === self.sort((a, b) => {
-                        // Turn your strings into dates, and then subtract them
-                        // to get a value that is either negative, positive, or zero.
-                        let bb: any = new Date(b.StartDate), aa: any = new Date(b.StartDate);
-                        return bb - aa;
-                    }).findIndex((t) => (t.CommitteeName === value.CommitteeName)))
-                });
-            });
         }
     }
 
-    private _detailDisplay = (prop, label) => {
-        return <div> <span>{label}: {this.state.member[prop] && this.state.member[prop]}</span></div>;
-    }
+
 
     public render(): React.ReactElement<any> {
         return this.state.member ?
             <div>
-                <Text variant={'xLarge'}>{this.state.member.Salutation} {this.state.member.Title}</Text>
+                {this.props.title && <Text variant={'xLarge'}>{this.state.member.Salutation} {this.props.title}</Text>}
                 <Pivot aria-label="Basic Pivot Example">
                     <PivotItem
                         headerText="Overview"
@@ -154,41 +224,7 @@ export default class MemberDetailsComponent extends React.Component<IMemberDetai
                             'data-title': 'Overview',
                         }}
                     >
-                        <div>
-                            <h3>Contact Information</h3>
-                            <Stack horizontal={true} wrap={true}>
-                                <Stack.Item grow={6}>
-                                    {this._detailDisplay('EMail', 'Email')}
-                                    {this._detailDisplay('EMail2', 'Email')}
-                                    {this._detailDisplay('CellPhone1', 'Cell Phone')}
-                                    {this._detailDisplay('HomePhone', 'Home Phone')}
-                                    {this._detailDisplay('WorkPhone', 'Work Phone')}
-                                </Stack.Item>
-                                <Stack.Item grow={6}>
-                                    {this._detailDisplay('Address', 'Address')}
-                                    {this._detailDisplay('PostalCode', 'Postal Code')}
-                                    {this._detailDisplay('City', 'City')}
-                                </Stack.Item>
-                            </Stack>
-                        </div>
-
-                        <div>
-                            <h3>Committees</h3>
-                            {
-                                this.state.termHistories ?
-                                    <div>
-                                        {this.state.termHistories.map(term => {
-                                            return <div>
-                                                <CommitteeMemberBreadCrumb
-                                                    committeeTerm={term}
-                                                    allTerms={this.state.allTermHistories}
-                                                    context={this.props.context} />
-                                            </div>;
-                                        })}
-                                    </div> :
-                                    <MyShimmer />
-                            }
-                        </div>
+                        <CommitteeMemberContactDetails member={this.state.member} />
                     </PivotItem>
                     <PivotItem headerText="Recent">
                         <span>Pivot #2</span>
