@@ -37,11 +37,17 @@ export interface INewCommitteeMemberFormItemState {
 export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitteeMemberFormItemState> {
     constructor(props) {
         super(props);
+        console.log(props);
         this.state = {
             positions: [],
             status: [],
             committeeFileItem: undefined,
         };
+
+        // If a CommitteeName has been passed down from a parent component then we will select that committee by default.
+        if (this.props.dataItem.CommitteeName) {
+            this._onSelectCommitteeChange({ value: this.props.dataItem.CommitteeName });
+        }
     }
 
     private _pushFileAttachment = (filePickerResult: IFilePickerResult[]) => {
@@ -60,6 +66,16 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
         this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Files`, { value: currentFiles });
     }
 
+    private _onSelectCommitteeChange = (e) => {
+        GetChoiceColumn(e.value, 'Status').then(f => this.setState({ status: f }));
+        GetChoiceColumn(e.value, 'Position').then(f => this.setState({ positions: f }));
+        GetCommitteeByName(e.value).then(f => this.setState({ committeeFileItem: f }));
+        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._EndDate`, { value: '' });
+        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].StartDate`, { value: '' });
+        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._Status`, { value: '' });
+        this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Position`, { value: '' });
+    }
+
     public render() {
         const reactTheme = getTheme();
         return (
@@ -71,15 +87,7 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
                         component={MyComboBox}
                         options={this.props.listViewContext.activeCommittees.map(value => { return { key: value.Title, text: value.Title }; })}
                         description={this.state.committeeFileItem ? `Term Length: ${this.state.committeeFileItem.TermLength} years.` : ""}
-                        onChange={(e) => {
-                            GetChoiceColumn(e.value, 'Status').then(f => this.setState({ status: f }));
-                            GetChoiceColumn(e.value, 'Position').then(f => this.setState({ positions: f }));
-                            GetCommitteeByName(e.value).then(f => this.setState({ committeeFileItem: f }));
-                            this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._EndDate`, { value: '' });
-                            this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].StartDate`, { value: '' });
-                            this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._Status`, { value: '' });
-                            this.props.formRenderProps.onChange(`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}].Position`, { value: '' });
-                        }}
+                        onChange={this._onSelectCommitteeChange}
                         required={true}
                         validator={value => value ? "" : "Please Select a Committee."}
                     />

@@ -7,21 +7,30 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
-import * as strings from 'AddCommitteeMemberFormWebPartStrings';
-import AddCommitteeMemberForm, { IAddCommitteeMemberFormProps } from '../../ClaringtonComponents/AddCommitteeMemberForm';
+import * as strings from 'CommitteeMemberDashboardWebPartStrings';
+import { CommitteeMemberDashboard, ICommitteeMemberDashboardProps } from '../../ClaringtonComponents/CommitteeMemberDashboard';
+import './components/workbench.module.scss';
 import { sp } from '@pnp/sp';
 
-export interface IAddCommitteeMemberFormWebPartProps {
+
+
+export interface ICommitteeMemberDashboardWebPartProps {
   description: string;
 }
 
-export default class AddCommitteeMemberFormWebPart extends BaseClientSideWebPart<IAddCommitteeMemberFormWebPartProps> {
+export default class CommitteeMemberDashboardWebPart extends BaseClientSideWebPart<ICommitteeMemberDashboardWebPartProps> {
 
   public render(): void {
-    const element: React.ReactElement<IAddCommitteeMemberFormProps> = React.createElement(
-      AddCommitteeMemberForm,
+    // See if memberId is provided in the URL. 
+    let params = new URLSearchParams(window.location.search);
+    let memberId = params.get("memberId");
+
+    const element: React.ReactElement<ICommitteeMemberDashboardProps> = React.createElement(
+      CommitteeMemberDashboard,
       {
-        description: this.properties.description
+        description: this.properties.description,
+        memberId: memberId ? Number(memberId) : undefined,
+        context: this.context
       }
     );
 

@@ -2,7 +2,6 @@
   "$schema": "https://developer.microsoft.com/json-schemas/core-build/serve.schema.json",
   "port": 4321,
   "https": true,
-  "initialPage": "https://enter-your-SharePoint-site/_layouts/workbench.aspx",
   "serveConfigurations": {
     "default": {
       "pageUrl": "https://claringtonnetdev.sharepoint.com/sites/CMM/CommitteeA",
@@ -11,6 +10,15 @@
           "id": "5815365a-7ce1-47a2-8cda-e43d0f45c8df",
           "properties": {
             "sampleText": "Value"
+          }
+        }
+      },
+      "customActions": {
+        "f406a3c9-a906-4836-8969-85cd8a6f6307": {
+          "location": "ClientSideExtension.ListViewCommandSet.CommandBar",
+          "properties": {
+            "sampleTextOne": "One item is selected in the list",
+            "sampleTextTwo": "This command is always visible."
           }
         }
       }
@@ -25,6 +33,23 @@
           }
         }
       }
+    },
+    "addMemberCommandSet": {
+      "pageUrl": "https://claringtonnetdev.sharepoint.com/sites/CMM/Lists/CommitteeMemberHistory",
+      "customActions": {
+        "f406a3c9-a906-4836-8969-85cd8a6f6307": {
+          "location": "ClientSideExtension.ListViewCommandSet.CommandBar",
+          "properties": {
+            "sampleTextOne": "One item is selected in the list",
+            "sampleTextTwo": "This command is always visible."
+          }
+        }
+      }
     }
+  },
+  "initialPage": "https://localhost:5432/workbench",
+  "api": {
+    "port": 5432,
+    "entryPath": "node_modules/@microsoft/sp-webpart-workbench/lib/api/"
   }
 }

@@ -25,6 +25,22 @@
           "manifest": "./src/extensions/committeeMemberLookUp/CommitteeMemberLookUpFieldCustomizer.manifest.json"
         }
       ]
+    },
+    "add-member-command-set-command-set": {
+      "components": [
+        {
+          "entrypoint": "./lib/extensions/addMemberCommandSet/AddMemberCommandSetCommandSet.js",
+          "manifest": "./src/extensions/addMemberCommandSet/AddMemberCommandSetCommandSet.manifest.json"
+        }
+      ]
+    },
+    "committee-member-dashboard-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/committeeMemberDashboard/CommitteeMemberDashboardWebPart.js",
+          "manifest": "./src/webparts/committeeMemberDashboard/CommitteeMemberDashboardWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -32,6 +48,8 @@
     "NewMemberFormWebPartStrings": "lib/webparts/newMemberForm/loc/{locale}.js",
     "AddCommitteeMemberFormWebPartStrings": "lib/webparts/addCommitteeMemberForm/loc/{locale}.js",
     "CommitteeMemberLookUpFieldCustomizerStrings": "lib/extensions/committeeMemberLookUp/loc/{locale}.js",
-    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
+    "AddMemberCommandSetCommandSetStrings": "lib/extensions/addMemberCommandSet/loc/{locale}.js",
+    "CommitteeMemberDashboardWebPartStrings": "lib/webparts/committeeMemberDashboard/loc/{locale}.js"
   }
 }

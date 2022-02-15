@@ -16,8 +16,7 @@ import ICommitteeFileItem from "../ClaringtonInterfaces/ICommitteeFileItem";
 import { IItemAddResult, IItemUpdateResult } from "@pnp/sp/items";
 import { IContentTypeInfo } from "@pnp/sp/content-types";
 import { IFolderAddResult } from "@pnp/sp/folders";
-import { ICommitteeMemberHistoryListItem } from "../ClaringtonInterfaces/ICommitteeMemberHistoryListItem";
-
+import { ICommitteeMemberHistoryListItem, ICommitteeMemberHistory_NewListItem } from "../ClaringtonInterfaces/ICommitteeMemberHistory";
 
 //#region Constants
 export const FORM_DATA_INDEX = "formDataIndex";
@@ -74,17 +73,56 @@ export const CalculateMemberInfoRetention = async (memberId: number): Promise<{ 
         let tmpDate = new Date(memberHistory[0].OData__EndDate);
         output = new Date(tmpDate.getFullYear() + RETENTION_PERIOD, tmpDate.getMonth(), tmpDate.getDate());
         committeeName = memberHistory[0].CommitteeName;
-        debugger;
     }
 
     return { date: output, committee: committeeName };
+};
+
+export const CalculateTotalYearsServed = (committeeTerms: ICommitteeMemberHistoryListItem[]): number => {
+    /**
+     * Steps to confirm Total Years Served.
+     * 1.   Start date must be less than today.  If is not ignore this term as it is invalid.
+     * 2.   End date must be greater than or equal to day.  If it is not use today's date.
+     * 3.   
+     */
+    debugger;
+    let totalYears: number = 0;
+    let termTotal: number = 0;
+
+    for (let termIndex = 0; termIndex < committeeTerms.length; termIndex++) {
+        // reset this counter. 
+        termTotal = 0;
+
+        const term = committeeTerms[termIndex];
+        let startDate = new Date(term.StartDate),
+            endDate = new Date(term.OData__EndDate),
+            today = new Date();
+
+        console.log(term);
+        if (startDate > today) {
+            debugger;
+            console.log('Something went wrong!');
+            continue; // Continue onto the next iteration. 
+        }
+
+        // End date is currently in the future so we will use today's date to calculate the total terms served. 
+        if (endDate >= today) {
+            endDate = today;
+        }
+
+        termTotal = endDate.getFullYear() - startDate.getFullYear();
+        
+        // Add to the running total.
+        totalYears += termTotal;
+    }
+
+    return totalYears;
 };
 //#endregion
 
 //#region Create
 export const CreateNewMember = async (member: IMemberListItem): Promise<IItemAddResult> => {
-    console.log('CreateNewMember');
-    member.Title = `${member.FirstName}, ${member.LastName}`;
+    member.Title = `${member.LastName}, ${member.FirstName}`;
     // add an item to the list
     let iar = await sp.web.lists.getByTitle(MyLists.Members).items.add(member);
     return iar;
@@ -97,13 +135,15 @@ export const CreateNewMember = async (member: IMemberListItem): Promise<IItemAdd
  * TODO: What type should the committee param be?
  */
 export const CreateNewCommitteeMember = async (memberId: number, committee: any): Promise<void> => {
+    if (!committee) {
+        throw "No Committee provided.";
+    }
+
     let member = await sp.web.lists.getByTitle(MyLists.Members).items.getById(memberId).get();
     const PATH_TO_DOC_SET = await FormatDocumentSetPath(committee.CommitteeName, member.Title);
 
     // Step 1: Create the document set.
     let docSet = await (await CreateDocumentSet({ LibraryTitle: committee.CommitteeName, Title: member.Title })).item.get();
-    console.log('doc set');
-    console.log(docSet);
 
     // Step 2: Update Metadata.
     sp.web.lists.getByTitle(committee.CommitteeName).items.getById(docSet.ID).update({
@@ -134,7 +174,7 @@ export const CreateNewCommitteeMember = async (memberId: number, committee: any)
         FirstName: member.FirstName,
         LastName: member.LastName,
         SPFX_CommitteeMemberDisplayNameId: memberId,
-        MemberID: memberId.toString(),
+        MemberID: memberId,
         Title: `${member.FirstName} ${member.LastName}`
     });
 };
@@ -158,7 +198,6 @@ export const CreateDocumentSet = async (input): Promise<IItemUpdateResult> => {
         newFolderResult = await sp.web.folders.add(FOLDER_NAME);
     } catch (error) {
         console.error(error);
-        debugger;
         throw error;
     }
 
@@ -168,15 +207,21 @@ export const CreateDocumentSet = async (input): Promise<IItemUpdateResult> => {
     });
 };
 
-export const CreateCommitteeMemberHistoryItem = async (committeeMemberHistoryItem: ICommitteeMemberHistoryListItem) => {
+export const CreateCommitteeMemberHistoryItem = async (committeeMemberHistoryItem: ICommitteeMemberHistory_NewListItem) => {
     await sp.web.lists.getByTitle(MyLists.CommitteeMemberHistory).items.add({ ...committeeMemberHistoryItem });
 
     let committeeMemberContactInfoRetention = await CalculateMemberInfoRetention(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId);
-    debugger;
+
     await sp.web.lists.getByTitle(MyLists.Members).items.getById(committeeMemberHistoryItem.SPFX_CommitteeMemberDisplayNameId).update({
         RetentionDate: committeeMemberContactInfoRetention.date,
         RetentionDateCommittee: committeeMemberContactInfoRetention.committee
     });
+};
+
+export const RenewCommitteeMember = async (values: any): Promise<any> => {
+    console.log('RenewCommitteeMember');
+    console.log(values);
+    return;
 };
 //#endregion
 
@@ -227,6 +272,14 @@ export const GetLibraryContentTypes = async (libraryTitle: string): Promise<stri
 
 export const GetMembers = async (): Promise<IMemberListItem[]> => await sp.web.lists.getByTitle(MyLists.Members).items.getAll();
 
+export const GetMember = async (id: number): Promise<any> => await sp.web.lists.getByTitle(MyLists.Members).items.getById(id).get();
+
+/**
+ * Get a members term history.
+ * @param id MemberID field from the Committee Member History list.
+ * @returns ICommitteeMemberHistoryListItem[]
+ */
+export const GetMembersTermHistory = async (id: number): Promise<ICommitteeMemberHistoryListItem[]> => await sp.web.lists.getByTitle(MyLists.CommitteeMemberHistory).items.filter(`MemberID eq ${id}`).get();
 
 /**
  * TODO: Finish this method. 

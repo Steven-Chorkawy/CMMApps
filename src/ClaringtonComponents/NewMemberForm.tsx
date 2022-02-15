@@ -3,12 +3,13 @@ import * as ReactDOM from "react-dom";
 
 import { DefaultButton, PrimaryButton, TextField, MaskedTextField, ComboBox, DatePicker, getTheme, ProgressIndicator, MessageBar, MessageBarType, Separator, Link } from '@fluentui/react';
 
-import { INewMemberFormProps } from './INewMemberFormProps';
-import { CreateNewCommitteeMember, CreateNewMember, FormatDocumentSetPath, GetChoiceColumn, GetListOfActiveCommittees, OnFormatDate } from '../../../ClaringtonHelperMethods/MyHelperMethods';
-import { NewCommitteeMemberFormComponent } from '../../../ClaringtonComponents/NewCommitteeMemberFormComponent';
-import { MyComboBox, PhoneInput, PostalCodeInput } from '../../../ClaringtonComponents/MyFormComponents';
+import { CreateNewCommitteeMember, CreateNewMember, FormatDocumentSetPath, GetChoiceColumn, GetListOfActiveCommittees, OnFormatDate } from '../ClaringtonHelperMethods/MyHelperMethods';
+import { NewCommitteeMemberFormComponent } from './NewCommitteeMemberFormComponent';
+import { MyComboBox, PhoneInput, PostalCodeInput } from './MyFormComponents';
 
 import { Form, FormElement, Field, FieldArray, FieldArrayProps } from '@progress/kendo-react-form';
+import { WebPartContext } from '@microsoft/sp-webpart-base';
+import { LocationPicker, ILocationPickerItem } from "@pnp/spfx-controls-react/lib/LocationPicker";
 
 export enum NewMemberFormSaveStatus {
   NewForm = -1,
@@ -16,6 +17,11 @@ export enum NewMemberFormSaveStatus {
   AddingMemberToCommittee = 1,
   Success = 2,
   Error = 3
+}
+
+export interface INewMemberFormProps {
+  description: string;
+  context: WebPartContext;
 }
 
 export interface INewMemberFormState {
@@ -49,8 +55,6 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
       this.setState({ saveStatus: NewMemberFormSaveStatus.CreatingNewMember });
       // Step 1: Create a new Member List Item.
       let newMemberItemAddResult = await CreateNewMember(values.Member);
-      console.log('ewMemberItemAddResult');
-      console.log(newMemberItemAddResult);
 
       // Step 2: Add the new member to committees if any are provided. 
       if (values.Committees) {
@@ -87,12 +91,34 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
       const { validationMessage, visited, ...others } = fieldRenderProps;
       return <TextField {...others} errorMessage={visited && validationMessage && validationMessage} />;
     };
-      
+
     const reactTheme = getTheme();
 
+    const initialValues = this.props?.context?.pageContext?.list?.title ? {
+      Committees: [{
+        CommitteeName: this.props.context?.pageContext.list.title,
+        Position: undefined,
+        StartDate: undefined,
+        _EndDate: undefined,
+        _Status: undefined
+      }]
+    } : undefined;
+
     return (<div style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '900px' }}>
+      <div>
+        <LocationPicker
+          context={this.props.context}
+          label="Location"
+        // onChange={(locValue: ILocationPickerItem) => {
+        //   console.log('location change');
+        //   console.log(locValue);
+        //   console.log(locValue.DisplayName + ", " + locValue.Address.Street)
+        // }}
+        />
+      </div>
       <Form
         onSubmit={this._onSubmit}
+        initialValues={initialValues}
         render={(formRenderProps) => (
           <FormElement>
             <h2>Add New Member</h2>
@@ -109,7 +135,6 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
               <Field name={'Member.CellPhone1'} label={'Cell Phone'} component={PhoneInput} onChange={e => formRenderProps.onChange(e.name, e.value)} />
               <Field name={'Member.WorkPhone'} label={'Work Phone'} component={PhoneInput} onChange={e => formRenderProps.onChange(e.name, e.value)} />
               <Field name={'Member.HomePhone'} label={'Home Phone'} component={PhoneInput} onChange={e => formRenderProps.onChange(e.name, e.value)} />
-
 
               <Field name={'Member.WorkAddress'} label={'Street Address'} component={TextField} />
               <Field name={'Member.WorkCity'} label={'City'} component={TextField} />

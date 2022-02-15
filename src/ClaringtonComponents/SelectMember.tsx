@@ -15,6 +15,7 @@ import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { sp } from '@pnp/sp';
 import IMemberListItem from '../ClaringtonInterfaces/IMemberListItem';
 import { MyShimmer } from './MyShimmer';
+import { CommitteeMemberTermHistory } from './MemberDetailsComponent';
 
 
 export interface ISelectMemberState {
@@ -32,10 +33,22 @@ export class SelectMember extends React.Component<any, ISelectMemberState> {
         };
 
         GetMembers().then(members => {
-            console.log('members');
-            console.log(members);
             this.setState({ members: members });
+            if (this.props.committeeMemberID) {
+                this._onComboBoxChange(null, {
+                    data: { ...members.find(f => f.ID === this.props.committeeMemberID) }
+                });
+            }
         });
+    }
+
+    private _onComboBoxChange = (event, option) => {
+        if (event) {
+            event.preventDefault();
+        }
+        // ! This calls the fields onChange event which in turn passes the new selected value to the form state.
+        this.props.onChange({ value: { ...option.data } });
+        this.setState({ selectedMember: option.data });
     }
 
     public render() {
@@ -51,7 +64,6 @@ export class SelectMember extends React.Component<any, ISelectMemberState> {
             marginLeft: '5px',
         };
 
-
         const stackStyle = {
             marginBottom: '10px',
         };
@@ -60,20 +72,14 @@ export class SelectMember extends React.Component<any, ISelectMemberState> {
             this.state.members ?
                 <div style={{ padding: '10px', marginBottom: '10px', boxShadow: reactTheme.effects.elevation16 }}>
                     <Stack horizontal tokens={stackTokens}>
-                        <Stack.Item grow={5}>
+                        <Stack.Item grow={4}>
                             <ComboBox
                                 label={this.props.label}
                                 options={this.state.members.map((member: IMemberListItem) => {
-                                    return { key: member.Title, text: member.Title, data: { ...member } };
+                                    return { key: member.ID, text: member.Title, data: { ...member } };
                                 })}
-                                onChange={(event, option) => {
-                                    event.preventDefault();
-                                    // ! This calls the fields onChange event which in turn passes the new selected value to the form state.
-                                    this.props.onChange({ value: { ...option.data } });
-                                    console.log(event);
-                                    console.log(option);
-                                    this.setState({ selectedMember: option.data });
-                                }}
+                                onChange={this._onComboBoxChange}
+                                defaultSelectedKey={this.props.committeeMemberID ? this.props.committeeMemberID : undefined}
                                 required={true}
                             />
                             <Separator />
@@ -114,13 +120,19 @@ export class SelectMember extends React.Component<any, ISelectMemberState> {
                                 </div>
                             }
                         </Stack.Item>
-                        <Stack.Item grow={1}>
+                        <Stack.Item grow={2}>
                             <h4>Current Committees</h4>
-                            <div>
-                                <MyShimmer />
-                                <MyShimmer />
-                                <MyShimmer />
-                            </div>
+                            {
+                                this.state.selectedMember ?
+                                    <div key={this.state.selectedMember.ID}>
+                                        <CommitteeMemberTermHistory memberID={this.state.selectedMember.ID} context={this.props.context} />
+                                    </div> :
+                                    <div>
+                                        <MyShimmer />
+                                        <MyShimmer />
+                                        <MyShimmer />
+                                    </div>
+                            }
                         </Stack.Item>
                     </Stack>
 
