@@ -8,4 +8,12 @@
             Group="SPFx Columns"
             ClientSideComponentId="5815365a-7ce1-47a2-8cda-e43d0f45c8df">
     </Field>
+    <CustomAction
+        Title="AddMemberCommandSet"
+        RegistrationId="101"
+        RegistrationType="List"
+        Location="ClientSideExtension.ListViewCommandSet.CommandBar"
+        ClientSideComponentId="f406a3c9-a906-4836-8969-85cd8a6f6307"
+        ClientSideComponentProperties="{&quot;sampleTextOne&quot;:&quot;One item is selected in the list.&quot;, &quot;sampleTextTwo&quot;:&quot;This command is always visible.&quot;}">
+    </CustomAction>
 </Elements>

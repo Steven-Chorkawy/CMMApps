@@ -3,7 +3,7 @@
   "solution": {
     "name": "cmm-apps-client-side-solution",
     "id": "5578e60f-7bbe-48bb-a57d-8fb31acf8df0",
-    "version": "2.0.0.5",
+    "version": "2.0.0.6",
     "includeClientSideAssets": true,
     "isDomainIsolated": false,
     "developer": {
@@ -18,7 +18,7 @@
         "title": "Application Extension - Deployment of custom action.",
         "description": "Deploys a custom action with ClientSideComponentId association",
         "id": "b97ce6d0-6b16-4a18-8d10-572ae5e63802",
-        "version": "2.0.0.5",
+        "version": "2.0.0.6",
         "assets": {
           "elementManifests": [
             "elements.xml"
