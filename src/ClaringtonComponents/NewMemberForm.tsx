@@ -105,17 +105,6 @@ export default class NewMemberForm extends React.Component<INewMemberFormProps, 
     } : undefined;
 
     return (<div style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: '900px' }}>
-      <div>
-        <LocationPicker
-          context={this.props.context}
-          label="Location"
-        // onChange={(locValue: ILocationPickerItem) => {
-        //   console.log('location change');
-        //   console.log(locValue);
-        //   console.log(locValue.DisplayName + ", " + locValue.Address.Street)
-        // }}
-        />
-      </div>
       <Form
         onSubmit={this._onSubmit}
         initialValues={initialValues}
