@@ -21,7 +21,8 @@ export default class AddCommitteeMemberFormWebPart extends BaseClientSideWebPart
     const element: React.ReactElement<IAddCommitteeMemberFormProps> = React.createElement(
       AddCommitteeMemberForm,
       {
-        description: this.properties.description
+        description: this.properties.description,
+        context: this.context
       }
     );
 

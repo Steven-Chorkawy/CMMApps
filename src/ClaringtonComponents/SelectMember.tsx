@@ -18,12 +18,19 @@ import { MyShimmer } from './MyShimmer';
 import { CommitteeMemberTermHistory } from './MemberDetailsComponent';
 
 
+export interface ISelectMemberProps {
+    context: WebPartContext;
+    committeeMemberID?: number;
+    label: string;          // Combo Box Label.
+    onChange: Function;     // Combobox onChange event.
+}
+
 export interface ISelectMemberState {
     members: IMemberListItem[];
     selectedMember: IMemberListItem;
 }
 
-export class SelectMember extends React.Component<any, ISelectMemberState> {
+export class SelectMember extends React.Component<ISelectMemberProps, ISelectMemberState> {
 
     constructor(props) {
         super(props);
@@ -125,7 +132,7 @@ export class SelectMember extends React.Component<any, ISelectMemberState> {
                             {
                                 this.state.selectedMember ?
                                     <div key={this.state.selectedMember.ID}>
-                                        <CommitteeMemberTermHistory memberID={this.state.selectedMember.ID} context={this.props.context} />
+                                        {/* <CommitteeMemberTermHistory memberID={this.state.selectedMember.ID} context={this.props.context} /> */}
                                     </div> :
                                     <div>
                                         <MyShimmer />

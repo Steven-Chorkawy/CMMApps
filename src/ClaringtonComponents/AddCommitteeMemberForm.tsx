@@ -30,25 +30,22 @@ export default class AddCommitteeMemberForm extends React.Component<IAddCommitte
     });
   }
 
-
   private _onSubmit = async (values) => {
     if (values.Committees && values.Member) {
       for (let committeeIndex = 0; committeeIndex < values.Committees.length; committeeIndex++) {
         await CreateNewCommitteeMember(values.Member.ID, values.Committees[committeeIndex]);
       }
-
       alert('Done!');
     }
   }
 
   public render(): React.ReactElement<IAddCommitteeMemberFormProps> {
-
     return (<div>
       <Form
         onSubmit={this._onSubmit}
         initialValues={{
           Committees: [{
-            CommitteeName: this.props?.context?.pageContext.list.title ? this.props.context?.pageContext.list.title : undefined,
+            CommitteeName: this.props?.context?.pageContext?.list?.title ? this.props.context?.pageContext.list.title : undefined,
             Position: undefined,
             StartDate: undefined,
             _EndDate: undefined,
@@ -64,6 +61,7 @@ export default class AddCommitteeMemberForm extends React.Component<IAddCommitte
               label={'Select Member'}
               require={true}
               component={SelectMember}
+              context={this.props.context}
             />
             {
               this.state.activeCommittees.length > 0 &&
