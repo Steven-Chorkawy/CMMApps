@@ -139,8 +139,9 @@ export class NewCommitteeMemberFormItem extends React.Component<any, INewCommitt
                         name={`${this.props.listViewContext.parentField}[${this.props.dataItem[FORM_DATA_INDEX]}]._EndDate`}
                         label={'Term End Date'}
                         formatDate={OnFormatDate}
-                        component={DatePicker}
-                        disabled={true}
+                        component={MyDatePicker}
+                        required={true}
+                        validator={value => value ? "" : "Please Select an End Date."}
                     />
                 }
                 {
